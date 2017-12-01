@@ -20,8 +20,8 @@ public class KinectPointManAvatarModel : BasicAvatarModel
     private Dictionary<JointType, Transform> jointTransforms = new Dictionary<JointType, Transform>();
 
     // currently tracked body
-    private int amount = 1;
-    protected Body[] currentBody = new Body[1];
+    protected Body currentBody = null;
+
 
     // dictionary where the connection of the joints is described
     // used to calculate the joint directions
@@ -55,7 +55,7 @@ public class KinectPointManAvatarModel : BasicAvatarModel
 
     };
 
-    public override Quaternion applyRelativeRotationChange(JointType jt, Quaternion initialModelJointRotation, int player)
+    public override Quaternion applyRelativeRotationChange(JointType jt, Quaternion initialModelJointRotation)
     {
         //missing information to calculate rotation for joint type
         if (!fromToJoints.ContainsKey(jt))
@@ -64,7 +64,7 @@ public class KinectPointManAvatarModel : BasicAvatarModel
         }
 
         // check if tracking is available
-        if (currentBody[player] == null)
+        if (currentBody == null)
         {
             return initialModelJointRotation;
         }
@@ -72,7 +72,7 @@ public class KinectPointManAvatarModel : BasicAvatarModel
         // original direction of bone
         Vector3 initialDirection = initialAvatarJointDirections[jt];
         // new direction of bone
-        Vector3 currentDirection = getJointDirection(jt, player);
+        Vector3 currentDirection = getJointDirection(jt);
         // rotation between the original an new bone direction in the kinect coordinate system
         Quaternion avatarInitialToCurrentRotation = Quaternion.FromToRotation(initialDirection, currentDirection);
         // because we assured, that the model rotation is always relative to Quaternion.identity, we can simply apply the rotation-change to the original rotation
@@ -81,20 +81,20 @@ public class KinectPointManAvatarModel : BasicAvatarModel
         return currentModelJointRotation;
     }
 
-    public override Vector3 getRawWorldPosition(JointType jt, int player)
+    public override Vector3 getRawWorldPosition(JointType jt)
     {
-        if (currentBody[player] == null)
+        if (currentBody == null)
             return Vector3.zero;
-        CameraSpacePoint point = currentBody[player].Joints[jt].Position;
+        CameraSpacePoint point = currentBody.Joints[jt].Position;
         // mirror on X/Y Plane to remove mirroring effect of the kinect data
         return new Vector3(point.X, point.Y, -point.Z);
     }
 
-    public override Quaternion getRawWorldRotation(JointType jt, int player)
+    public override Quaternion getRawWorldRotation(JointType jt)
     {
-        if (currentBody[player] == null)
+        if (currentBody == null)
             return Quaternion.identity;
-        Windows.Kinect.Vector4 rot = currentBody[player].JointOrientations[jt].Orientation;
+        Windows.Kinect.Vector4 rot = currentBody.JointOrientations[jt].Orientation;
         // is this correct like this?
         return new Quaternion(rot.X, rot.Y, rot.Z, rot.W);
 
@@ -132,38 +132,32 @@ public class KinectPointManAvatarModel : BasicAvatarModel
 
         // use the first tracked body
         List<ulong> trackedIds = new List<ulong>();
-        int cnt = 0;
         foreach (var body in data)
         {
             if (body == null) continue;
             if (body.IsTracked)
             {
-                currentBody[cnt] = body;
-                cnt++;
-                if(cnt > (amount-1))
-                    break;
+                currentBody = body;
+                break;
             }
         }
 
-        for (int i = 0; i < amount; i++)
-        {
-            if (currentBody[i] == null) continue;
+        if (currentBody == null) return;
 
-            // update debug data
-            foreach (JointType jt in fromToJoints.Keys)
-            {
-                //transforms[jt].rotation = getRawWorldRotation(jt);
-                jointTransforms[jt].position = getRawWorldPosition(jt, i);
-                // debug: show computed rotatations
-                jointTransforms[jt].rotation = applyRelativeRotationChange(jt, Quaternion.identity, i);
-            }
+        // update debug data
+        foreach (JointType jt in fromToJoints.Keys)
+        {
+            //transforms[jt].rotation = getRawWorldRotation(jt);
+            jointTransforms[jt].position = getRawWorldPosition(jt);
+            // debug: show computed rotatations
+            jointTransforms[jt].rotation = applyRelativeRotationChange(jt, Quaternion.identity);
         }
     }
 
-    public virtual Vector3 getJointDirection(JointType jt, int player)
+    public virtual Vector3 getJointDirection(JointType jt)
     {
-        Vector3 jointPos = getRawWorldPosition(jt, player);
-        Vector3 nextJointPos = getRawWorldPosition(fromToJoints[jt], player);
+        Vector3 jointPos = getRawWorldPosition(jt);
+        Vector3 nextJointPos = getRawWorldPosition(fromToJoints[jt]);
 
         return nextJointPos - jointPos;
     }
@@ -176,6 +170,17 @@ public class KinectPointManAvatarModel : BasicAvatarModel
         return nextJointPos - jointPos;
     }
 
+    public override ulong getTrackingID()
+    {
+        if (currentBody == null)
+            return 0;
 
+        return currentBody.TrackingId;
+    }
+
+    public  override HandState getRightHandState() {
+        
+        return (currentBody == null) ? HandState.NotTracked : currentBody.HandRightState;
+    }
 
 }

@@ -33,8 +33,6 @@ public class BasicAvatarController : MonoBehaviour
     public Transform ThumbLeft;
     public Transform HandTipRight;
     public Transform ThumbRight;
-    public int player;
-
     // root transformation, used to determine the initial rotation of the complete model
     public Transform RootTransform;
 
@@ -75,7 +73,7 @@ public class BasicAvatarController : MonoBehaviour
         foreach (JointType jt in knownJoints.Keys)
         {
             // the applyRelativeRotationChange function returns the new "local rotation" relative to the RootTransform Rotation...
-            Quaternion localRotTowardsRootTransform = MoCapAvatar.applyRelativeRotationChange(jt, initialModelJointRotations[jt], player);
+            Quaternion localRotTowardsRootTransform = MoCapAvatar.applyRelativeRotationChange(jt, initialModelJointRotations[jt]);
             // ...therefore we have to multiply it with the RootTransform Rotation to get the global rotation of the joint
             knownJoints[jt].rotation = RootTransform.rotation * localRotTowardsRootTransform;
         }

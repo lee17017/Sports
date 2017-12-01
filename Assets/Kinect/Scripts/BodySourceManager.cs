@@ -37,7 +37,7 @@ public class BodySourceManager : MonoBehaviour
                 {
                     _data = new Body[_sensor.BodyFrameSource.BodyCount];
                 }
-
+                
                 frame.GetAndRefreshBodyData(_data);
 
                 frame.Dispose();
