@@ -1,20 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class BaseObject: MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-		
-	}
+public abstract class BaseObject: MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision){
-        
+        if(collision.gameObject.GetComponent<Player>()){
+            NotifyPlayerCollision(collision.gameObject.GetComponent<Player>());
+        }
     }
 
-    // Update is called once per frame
-    void Update () {
-		
-	}
+    protected abstract void NotifyPlayerCollision(Player player);
+
 }
