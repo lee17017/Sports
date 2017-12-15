@@ -50,7 +50,7 @@ public class GestureHandler : MonoBehaviour {
     {
         if (h == HandState.Closed)
         {
-            //Do something
+            Debug.Log("Closed");
         }
     }
     void detectShoot(Vector3 handRight, Vector3 handLeft)
