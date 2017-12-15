@@ -6,8 +6,9 @@ using System;
 
 public class GestureHandler : MonoBehaviour {
 
-
-    public BasicAvatarModel MoCapAvatar;
+    public static GestureHandler instance;
+ 
+    public static BasicAvatarModel MoCapAvatar;
 
     //flap Gestic Variables:
     private enum handState {MID, UP, MIDtoDOWN, DOWN, MIDtoUP }; //maybe rename enum 
@@ -30,12 +31,25 @@ public class GestureHandler : MonoBehaviour {
     private float rightMax=0, rightMin=20, leftMax=0, leftMin=20;
     private float rMaxCnt = 0, rMinCnt = 0, lMaxCnt = 0, lMinCnt = 0;
 	// Use this for initialization
+    void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+            MoCapAvatar = GetComponent<KinectPointManAvatarModel>();
+            DontDestroyOnLoad(this.gameObject);
+        }
+    }
 	void Start () {
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        Vector3 spineMid = MoCapAvatar.getRawWorldPosition(JointType.SpineMid);
+     /*   Vector3 spineMid = MoCapAvatar.getRawWorldPosition(JointType.SpineMid);
         Vector3 handRightRel = MoCapAvatar.getRawWorldPosition(JointType.HandRight)-spineMid;
         Vector3 handLeftRel = MoCapAvatar.getRawWorldPosition(JointType.HandLeft)-spineMid;
         HandState h = MoCapAvatar.getRightHandState();
@@ -43,16 +57,17 @@ public class GestureHandler : MonoBehaviour {
         detectShoot(handRightRel, handLeftRel);
         detectRightHandState(h);
         //minMaxDetect(handRightRel.x, handLeftRel.x);
-       // Debug.Log("r: " + handRightRel + " -------- l: " + handLeftRel);
+       // Debug.Log("r: " + handRightRel + " -------- l: " + handLeftRel);*/
 	}
 
-    void detectRightHandState(HandState h)
+
+    public static bool getRightHandState()
     {
-        if (h == HandState.Closed)
-        {
-            Debug.Log("Closed");
-        }
+        bool temp = MoCapAvatar.getRightHandState() == HandState.Closed;
+        Debug.Log(temp);
+        return temp;
     }
+
     void detectShoot(Vector3 handRight, Vector3 handLeft)
     {
         switch (curShootState)
@@ -130,7 +145,6 @@ public class GestureHandler : MonoBehaviour {
             rightMax = handRightRel;
             rMaxCnt = 1;
         }
-
         else if (handRightRel < rightMin)
         {
             rightMin = handRightRel;

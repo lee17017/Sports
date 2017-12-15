@@ -8,7 +8,7 @@ using System;
 public class KinectPointManAvatarModel : BasicAvatarModel
 {
     // get data from kinect
-    public BodySourceManager BodyManager;
+    private BodySourceManager BodyManager;
 
     // initial rotation of each joint
     private Dictionary<JointType, Vector3> initialAvatarJointPositions = new Dictionary<JointType, Vector3>();
@@ -103,6 +103,7 @@ public class KinectPointManAvatarModel : BasicAvatarModel
     // set all joints and save their initial directions and positions
     public virtual void Start()
     {
+        BodyManager = GetComponent<BodySourceManager>();
         // first find the transform objects
         foreach (JointType jt in Enum.GetValues(typeof(JointType)))
         {
@@ -150,7 +151,7 @@ public class KinectPointManAvatarModel : BasicAvatarModel
             //transforms[jt].rotation = getRawWorldRotation(jt);
             jointTransforms[jt].position = getRawWorldPosition(jt);
             // debug: show computed rotatations
-            jointTransforms[jt].rotation = applyRelativeRotationChange(jt, Quaternion.identity);
+                jointTransforms[jt].rotation = applyRelativeRotationChange(jt, Quaternion.identity);
         }
     }
 
@@ -158,7 +159,6 @@ public class KinectPointManAvatarModel : BasicAvatarModel
     {
         Vector3 jointPos = getRawWorldPosition(jt);
         Vector3 nextJointPos = getRawWorldPosition(fromToJoints[jt]);
-
         return nextJointPos - jointPos;
     }
 
@@ -166,7 +166,6 @@ public class KinectPointManAvatarModel : BasicAvatarModel
     {
         Vector3 jointPos = jointTransforms[jt].position;
         Vector3 nextJointPos = jointTransforms[fromToJoints[jt]].position;
-
         return nextJointPos - jointPos;
     }
 
@@ -174,12 +173,10 @@ public class KinectPointManAvatarModel : BasicAvatarModel
     {
         if (currentBody == null)
             return 0;
-
         return currentBody.TrackingId;
     }
 
     public  override HandState getRightHandState() {
-        
         return (currentBody == null) ? HandState.NotTracked : currentBody.HandRightState;
     }
 

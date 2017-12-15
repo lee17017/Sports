@@ -75,6 +75,7 @@ public class BasicAvatarController : MonoBehaviour
             // the applyRelativeRotationChange function returns the new "local rotation" relative to the RootTransform Rotation...
             Quaternion localRotTowardsRootTransform = MoCapAvatar.applyRelativeRotationChange(jt, initialModelJointRotations[jt]);
             // ...therefore we have to multiply it with the RootTransform Rotation to get the global rotation of the joint
+
             knownJoints[jt].rotation = RootTransform.rotation * localRotTowardsRootTransform;
         }
     }
