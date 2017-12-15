@@ -11,25 +11,28 @@ public class GestureHandler : MonoBehaviour {
     public static BasicAvatarModel MoCapAvatar;
 
     //flap Gestic Variables:
-    private enum handState {MID, UP, MIDtoDOWN, DOWN, MIDtoUP }; //maybe rename enum 
-    private handState curHandState = handState.MID;
-    private float handDetUpY = 0.4f;
-    private float handDetDownY = -0.2f;
-    private float handDetX = 0.4f; // 0.6 * cos(rot) change for more specific calculation to DO
-    private float handDetZ = 0.3f;
+    private static enum handState {MID, UP, MIDtoDOWN, DOWN, MIDtoUP }; //maybe rename enum 
+    private static handState curHandState = handState.MID;
+
+    private static Vector3 handRightRel;
+    private static Vector3 handLeftRel;
+    private static float handDetUpY = 0.4f;
+    private static float handDetDownY = -0.2f;
+    private static float handDetX = 0.4f; // 0.6 * cos(rot) change for more specific calculation to DO
+    private static float handDetZ = 0.3f;
 
 
     //shoot Gestic Variables:
-    private enum shootState { NORM, SHOOT }; //I am terible at naming stuff
-    private shootState curShootState = shootState.NORM;
-    private float shootDetZ = 0.5f;
-    private float shootBackDetZ = 0.3f;
+    private static enum shootState { NORM, SHOOT }; //I am terible at naming stuff
+    private static shootState curShootState = shootState.NORM;
+    private static float shootDetZ = 0.5f;
+    private static float shootBackDetZ = 0.3f;
 
     //testVariables:
-    private float flapCnt = 0;
+    private static float flapCnt = 0;
 
-    private float rightMax=0, rightMin=20, leftMax=0, leftMin=20;
-    private float rMaxCnt = 0, rMinCnt = 0, lMaxCnt = 0, lMinCnt = 0;
+    private static float rightMax=0, rightMin=20, leftMax=0, leftMin=20;
+    private static float rMaxCnt = 0, rMinCnt = 0, lMaxCnt = 0, lMinCnt = 0;
 	// Use this for initialization
     void Awake()
     {
@@ -44,9 +47,7 @@ public class GestureHandler : MonoBehaviour {
             DontDestroyOnLoad(this.gameObject);
         }
     }
-	void Start () {
-	}
-	
+
 	// Update is called once per frame
 	void Update () {
      /*   Vector3 spineMid = MoCapAvatar.getRawWorldPosition(JointType.SpineMid);
@@ -68,65 +69,72 @@ public class GestureHandler : MonoBehaviour {
         return temp;
     }
 
-    void detectShoot(Vector3 handRight, Vector3 handLeft)
+    public static void calcPositions() {
+        Vector3 spineMid = MoCapAvatar.getRawWorldPosition(JointType.SpineMid);
+        handRightRel = MoCapAvatar.getRawWorldPosition(JointType.HandRight) - spineMid;
+        handLeftRel = MoCapAvatar.getRawWorldPosition(JointType.HandLeft) - spineMid;
+
+    }
+    public static bool detectShoot()
     {
         switch (curShootState)
         {
             case shootState.NORM:
-                if ((handRight.z > shootDetZ && handLeft.z < shootDetZ) || (handRight.z < shootDetZ && handLeft.z > shootDetZ))
+                if ((handRightRel.z > shootDetZ && handLeftRel.z < shootDetZ) || (handRightRel.z < shootDetZ && handLeftRel.z > shootDetZ))
                 {
-                    Debug.LogWarning("SHOOOOOOOOOOOOOOOOOOOT");
                     curShootState = shootState.SHOOT;
+                    return true;
                 }
                 break;
             case shootState.SHOOT:
-                if (handRight.z < shootBackDetZ && handLeft.z < shootBackDetZ)
+                if (handRightRel.z < shootBackDetZ && handLeftRel.z < shootBackDetZ)
                 {
                     curShootState = shootState.NORM;
-                    Debug.LogWarning("Back");
                 }
                 break;
 
             default: Debug.LogWarning("detectShoot no STATE"); break;
         }
+        return false;
     }
-    void detectFlap(Vector3 handRight, Vector3 handLeft)
+    public static bool detectFlap() // change to float
     {
-        if (handRight.x < handDetX || handLeft.x > -handDetX || handLeft.z > handDetZ || handRight.z > handDetZ)
+        if (handRightRel.x < handDetX || handLeftRel.x > -handDetX || handLeftRel.z > handDetZ || handRightRel.z > handDetZ)
         {
             if (curHandState != handState.MID)
             {
                 curHandState = handState.MID;
             }
-            return;
+            return false;
         }
         
         switch (curHandState)
         {
             case handState.MIDtoUP:
-                if (handRight.y > handDetUpY && handLeft.y > handDetUpY)
+                if (handRightRel.y > handDetUpY && handLeftRel.y > handDetUpY)
                     curHandState = handState.UP;
                 break;
             case handState.UP:
-                if (handRight.y < handDetUpY && handLeft.y < handDetUpY)
+                if (handRightRel.y < handDetUpY && handLeftRel.y < handDetUpY)
                     curHandState = handState.MIDtoDOWN;
                 break;
             case handState.MIDtoDOWN:
-                if (handRight.y < handDetDownY && handLeft.y < handDetDownY)
+                if (handRightRel.y < handDetDownY && handLeftRel.y < handDetDownY)
                 {
                     curHandState = handState.DOWN;
                     flapCnt++;
                     Debug.LogWarning("Flap"+flapCnt);
+                    return true;
                 }
                 break;
             case handState.DOWN:
-                if (handRight.y > handDetDownY && handLeft.y > handDetDownY)
+                if (handRightRel.y > handDetDownY && handLeftRel.y > handDetDownY)
                     curHandState = handState.MIDtoUP;
                 break;
             case handState.MID: //to do handle start flap
-                if (handRight.y > handDetUpY && handLeft.y > handDetUpY)
+                if (handRightRel.y > handDetUpY && handLeftRel.y > handDetUpY)
                     curHandState = handState.UP;
-                else if (handRight.y < handDetDownY && handLeft.y < handDetDownY)
+                else if (handRightRel.y < handDetDownY && handLeftRel.y < handDetDownY)
                 {
                     curHandState = handState.DOWN;
                     flapCnt+=0.5f;
@@ -136,6 +144,7 @@ public class GestureHandler : MonoBehaviour {
             default: Debug.LogWarning("detectFlap no STATE"); break;
 
         }
+        return false;
     }
 
     void minMaxDetect(float handRightRel, float handLeftRel)
