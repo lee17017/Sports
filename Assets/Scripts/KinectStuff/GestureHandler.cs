@@ -15,13 +15,22 @@ public class GestureHandler : MonoBehaviour {
 
     private static Vector3 handRightRel;
     private static Vector3 handLeftRel;
+
+
+    //position limits - delete maybe
     private static float handDetUpY = 0.4f;
     private static float handDetDownY = -0.2f;
     private static float handDetX = 0.4f; // 0.6 * cos(rot) change for more specific calculation to DO
     private static float handDetZ = 0.3f;
     private static float max=0, min=0;
-    private static float shoulderRightRot, shoulderLeftRot;
-    private static float maxRot;
+
+    //rotational informations
+    private static float shoulderRightRotY, shoulderLeftRotY;
+    private static float shoulderRightRotZ, shoulderLeftRotZ;
+    private static float maxRotY;
+    private static float rotYOffset = 10;
+    private static float detRotUpY = 0;
+    private static float detRotDownY = -10;
 
     //shoot Gestic Variables:
     public enum shootState { NORM, SHOOT }; //I am terible at naming stuff
@@ -64,26 +73,37 @@ public class GestureHandler : MonoBehaviour {
 
 
     public static bool getRightHandState()
-    {
+    { 
         bool temp = MoCapAvatar.getRightHandState() == HandState.Closed;
         return temp;
     }
 
+    public static void giveMeMyInfo() {
+        Debug.Log(shoulderRightRotZ);
+    }
     public static void calcPositions() {
-        Vector3 spineMid = MoCapAvatar.getRawWorldPosition(JointType.SpineMid);
-        handRightRel = MoCapAvatar.getRawWorldPosition(JointType.HandRight) - spineMid;
-        handLeftRel = MoCapAvatar.getRawWorldPosition(JointType.HandLeft) - spineMid;
-        float angle = Mathf.Asin(handRightRel.y / handRightRel.magnitude);
-        Debug.Log(angle);
+        Vector3 spineShoulder = MoCapAvatar.getRawWorldPosition(JointType.SpineShoulder);
+        handRightRel = MoCapAvatar.getRawWorldPosition(JointType.HandRight) - spineShoulder;
+        handLeftRel = MoCapAvatar.getRawWorldPosition(JointType.HandLeft) - spineShoulder;
+
+        shoulderRightRotY = Mathf.Asin(handRightRel.y / handRightRel.magnitude) * 180 / Mathf.PI + rotYOffset;
+        shoulderRightRotZ = Mathf.Asin(handRightRel.z / handRightRel.magnitude) * 180 / Mathf.PI + rotYOffset;
+
+        shoulderLeftRotY = Mathf.Asin(handLeftRel.y / handRightRel.magnitude) * 180 / Mathf.PI + rotYOffset;
+        shoulderLeftRotZ = Mathf.Asin(handLeftRel.z / handRightRel.magnitude) * 180 / Mathf.PI + rotYOffset;
     }
     public static bool detectShoot()
     {
         switch (curShootState)
         {
             case shootState.NORM:
-                if ((handRightRel.z > shootDetZ && handLeftRel.z < shootDetZ) || (handRightRel.z < shootDetZ && handLeftRel.z > shootDetZ))
+                if(handRightRel.z > shootDetZ || handLeftRel.z > shootDetZ)
+                //if ((handRightRel.z > shootDetZ && handLeftRel.z < shootDetZ) || (handRightRel.z < shootDetZ && handLeftRel.z > shootDetZ))
                 {
                     curShootState = shootState.SHOOT;
+                    curHandState = handState.MID;
+                    maxRotY = 0;
+                    Debug.Log("PEEEEEEEEEEEEEEEEEEEEEEEEEEWWWWWWWWWWW");
                     return true;
                 }
                 break;
@@ -99,16 +119,39 @@ public class GestureHandler : MonoBehaviour {
         return false;
     }   
 
-    public static float detectFlap2()
+    public static float detectFlap()
     {
-            shoulderRightRot = MoCapAvatar.getRot(JointType.ShoulderRight).eulerAngles.z;
-        if (shoulderRightRot > maxRot)
-            maxRot = shoulderRightRot;
-        Debug.Log(shoulderRightRot);
-        
+        if (handRightRel.z > handDetZ) { return 0.0f; }
+        float avg = (shoulderRightRotY + shoulderLeftRotY) / 2;
+        switch (curHandState)
+        {
+            case handState.UP:
+                if (avg > maxRotY)
+                    maxRotY = avg;
+                if (shoulderRightRotY < detRotUpY && shoulderLeftRotY < detRotUpY)
+                    curHandState = handState.MID;
+                break;
+            case handState.DOWN:
+                if (shoulderRightRotY > detRotDownY && shoulderLeftRotY > detRotDownY)
+                    curHandState = handState.MID;
+                break;
+            case handState.MID: //to do handle start flap
+                if (shoulderRightRotY > detRotUpY && shoulderLeftRotY > detRotUpY)
+                    curHandState = handState.UP;
+                else if (shoulderRightRotY < detRotDownY && shoulderLeftRotY < detRotDownY) {
+                    Debug.Log("Flap: " + maxRotY);
+                    curHandState = handState.DOWN;
+                    float temp = maxRotY;
+                    maxRotY = 0;
+                    return temp;
+                }
+                break;
+            default: Debug.LogWarning("detectFlap no STATE"); break;
+
+        }
         return 0;
     }
-    public static bool detectFlap() // change to float
+    public static bool detectFlap2() // change to float
     {
         if (handRightRel.x < handDetX || handLeftRel.x > -handDetX || handLeftRel.z > handDetZ || handRightRel.z > handDetZ)
         {
@@ -164,31 +207,9 @@ public class GestureHandler : MonoBehaviour {
         return false;
     }
 
-    void minMaxDetect(float handRightRel, float handLeftRel)
-    {
-        if (handRightRel > rightMax)
-        {
-            rightMax = handRightRel;
-            rMaxCnt = 1;
-        }
-        else if (handRightRel < rightMin)
-        {
-            rightMin = handRightRel;
-            rMinCnt = 1;
-        }
-        if (handLeftRel > leftMax)
-        {
-            leftMax = handLeftRel;
-            rMaxCnt = 1;
-        }
-        else if (handLeftRel < leftMin)
-        {
-            leftMin = handLeftRel;
-            rMinCnt = 1;
-        }
-    }
+
     void OnApplicationQuit()
     {
-        Debug.Log(maxRot);
+
     }
 }
