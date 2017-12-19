@@ -7,9 +7,9 @@ using System;
 public abstract class BasicAvatarModel : MonoBehaviour
 {
 
-
     public abstract Quaternion applyRelativeRotationChange(JointType jt, Quaternion initialModelJointRotation);
 
+    public abstract Quaternion getRot(JointType jt);
     public abstract Quaternion getRawWorldRotation(JointType jt);
 
     public abstract Vector3 getRawWorldPosition(JointType jt);

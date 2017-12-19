@@ -17,7 +17,7 @@ public class KinectPointManAvatarModel : BasicAvatarModel
     protected Dictionary<JointType, Vector3> initialAvatarJointDirections = new Dictionary<JointType, Vector3>();
 
     // transforms that correspond to the joints from kinect, used to get the initial kinect directions
-    private Dictionary<JointType, Transform> jointTransforms = new Dictionary<JointType, Transform>();
+    public Dictionary<JointType, Transform> jointTransforms = new Dictionary<JointType, Transform>();
 
     // currently tracked body
     protected Body currentBody = null;
@@ -80,7 +80,12 @@ public class KinectPointManAvatarModel : BasicAvatarModel
 
         return currentModelJointRotation;
     }
+    public override Quaternion getRot(JointType jt){
+        if (currentBody == null)
+            return Quaternion.identity;
+        return jointTransforms[jt].rotation;
 
+    }
     public override Vector3 getRawWorldPosition(JointType jt)
     {
         if (currentBody == null)
