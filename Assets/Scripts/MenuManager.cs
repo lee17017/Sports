@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class MenuManager : MonoBehaviour
 {
-    private bool handState;
+    private bool _handState;
     public float interactionTimer;
-    private float timer = 0;
+    private float _timer = 0;
 
     // Use this for initialization
     void Start()
@@ -18,35 +18,35 @@ public class MenuManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        handState = GestureHandler.getRightHandState();
+        _handState = GestureHandler.getRightHandState();
 
         //Überprüfen, ob man die rechte Hand zuhält
-        if (handState == true)
+        if (_handState == true)
         {
             //Start Timer:
-            timer += Time.deltaTime;
+            _timer += Time.deltaTime;
 
-            if (timer >= interactionTimer)
+            if (_timer >= interactionTimer)
             {
                 // Interaction complete:
-                timer = 0;
-                startGame();
+                _timer = 0;
+                StartGame();
             }
         }
-        else if (handState == false && timer > 0)
+        else if (_handState == false && _timer > 0)
         {
             //Stopping Timer:
-            timer = 0;
+            _timer = 0;
         }
     }
 
-    public void startGame()
+    public void StartGame()
     {
         // More Init and Setup here!
-        loadLevel(1);
+        LoadLevel(1);
     }
 
-    void loadLevel(int level)
+    void LoadLevel(int level)
     {
         // Reset lives, etc...
         SceneManager.LoadScene(level);
