@@ -104,6 +104,9 @@ public class Player : MonoBehaviour {
             transform.Translate(-(_currentPositionInBorder - _borderRight), 0, 0);
             _currentPositionInBorder = _borderRight;
         }
+
+        //update position in game manager
+        GameManager.Instance.UpdatePlayerPosition(transform.position.x);
     }
 
     private float GetFlapForce(float elapsedTime) {

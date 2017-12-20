@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 
+    private const string LevelPrefix = "Level";
+
     private static GameManager _instance = null;
     public static GameManager Instance { get { return _instance; } }
 
@@ -69,33 +71,44 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Die() {
-
+        Debug.Log("Dieded");
     }
 
     private void Win() {
-
+        Debug.Log("Win!");
+        if(_currentLevel+1 <= _maxLevel) {
+            LoadLevel(_currentLevel+1);
+        }
     }
 
     public void LoadLevel(int level) {
-        if (!_isLoadingLevel) {
+        if (!_isLoadingLevel && level <= _maxLevel) {
             _isLoadingLevel = true;
 
-            _uiController.ActivateLoadingScreen();
+            if(_uiController != null) {
+                _uiController.ActivateLoadingScreen();
+            }
 
             StartCoroutine(LoadSceneAsync(level));
-        } else {
+        } else if(!_isLoadingLevel) {
             Debug.LogWarning("Already loading a Level, wait until done!");
+        } else {
+            Debug.LogWarning("Level does not exist!");
         }
     }
 
     IEnumerator LoadSceneAsync(int scene) {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Scene"+scene);
+        Debug.Log("Starting to load " + LevelPrefix + scene);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(LevelPrefix + scene);
 
         while (!asyncLoad.isDone) {
-            OnLevelLoaded();
-            _isLoadingLevel = false;
             yield return null;
         }
+        OnLevelLoaded();
+        _isLoadingLevel = false;
+        _currentLevel++;
+        Debug.Log("Done loading " + LevelPrefix + scene);
+        yield return null;
     }
 
 }

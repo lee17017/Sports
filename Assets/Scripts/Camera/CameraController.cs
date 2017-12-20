@@ -14,6 +14,9 @@ public class CameraController : MonoBehaviour {
 
 	void Start () {
         //_offset = _camera.transform.position - _player.transform.position;
+        if(_player == null) {
+            _player = FindObjectOfType<Player>();
+        }
 	}
 
     private void LateUpdate() {

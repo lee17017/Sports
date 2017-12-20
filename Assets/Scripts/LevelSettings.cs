@@ -11,7 +11,7 @@ public class LevelSettings : MonoBehaviour {
     public float LevelEndX { get { return _levelEndX; } }
 
     private void OnDrawGizmos() {
-        Gizmos.color = Color.blue;
+        Gizmos.color = Color.yellow;
         Gizmos.DrawLine(new Vector3(_levelEndX, -10, 0), new Vector3(_levelEndX, 10, 0));
     }
 }
