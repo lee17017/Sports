@@ -9,12 +9,6 @@ public class MenuManager : MonoBehaviour
     public float interactionTimer;
     private float _timer = 0;
 
-    // Use this for initialization
-    void Start()
-    {
-        // Init
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -42,13 +36,6 @@ public class MenuManager : MonoBehaviour
 
     public void StartGame()
     {
-        // More Init and Setup here!
-        LoadLevel(1);
-    }
-
-    void LoadLevel(int level)
-    {
-        // Reset lives, etc...
-        SceneManager.LoadScene(level);
+        GameManager.Instance.LoadLevel(1);
     }
 }
