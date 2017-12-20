@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
+    [Header("Debug")]
+    private bool _isKinectEnabled = false;
+
     [Header("Movement")]
 
     [SerializeField]
@@ -11,7 +14,7 @@ public class Player : MonoBehaviour {
 
     [SerializeField]
     private float _lift;
-    
+
     [SerializeField, Tooltip("Time until force in Y direction is 0 after wing beat")]
     private float _flapTime;
 
@@ -29,12 +32,10 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private float _borderRight = 0;
 
+
     private float _currentForceY = 0;
-
     private float _lastFlapStamp = 0;
-
     private float _currentLeanSpeed;
-
     private float _currentPositionInBorder = 0;
 
     private Collider _collider;
@@ -78,8 +79,17 @@ public class Player : MonoBehaviour {
         deltaX += _autoMoveX * Time.deltaTime;
         deltaX += _currentLeanSpeed * Time.deltaTime;
 
-        _currentForceY += GetFlapForce(Time.realtimeSinceStartup - _lastFlapStamp);
-        _currentForceY -= GetGravity(Time.realtimeSinceStartup - _lastFlapStamp);
+        if (_isKinectEnabled) {
+            //calculate flap force
+            GestureHandler.calcPositions();
+            float flap = GestureHandler.detectFlap();
+            bool shoot = GestureHandler.detectShoot();
+
+            _currentForceY += flap;
+        } else {
+            _currentForceY += GetFlapForce(Time.realtimeSinceStartup - _lastFlapStamp);
+            _currentForceY -= GetGravity(Time.realtimeSinceStartup - _lastFlapStamp);
+        }
 
         //apply translation
         gameObject.transform.Translate(new Vector3(deltaX, deltaY, deltaZ));
@@ -108,7 +118,7 @@ public class Player : MonoBehaviour {
     }
 
 
-    //Gizmo
+    //Gizmos for player movement borders
     private void OnDrawGizmos() {
         Gizmos.color = Color.red;
         //draw line for left border + line for bounding box max x bounds
