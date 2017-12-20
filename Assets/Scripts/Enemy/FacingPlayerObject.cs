@@ -88,5 +88,3 @@ public class FacingPlayerObject : Enemy
         Act();
     }
 }
-
-}
