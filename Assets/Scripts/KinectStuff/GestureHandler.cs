@@ -107,7 +107,7 @@ public class GestureHandler : MonoBehaviour {
         return false;
     }   
 
-    public float detectFlap() //returns a float between x and y when flap is detected(1frame), else 0
+    public float detectFlap() //returns a float between 0 and 1 when flap is detected(1frame), else 0
     {
         if (_handRightRel.z > _handDetZ) {return 0.0f; }
         float avg = (_shoulderRightRotY + _shoulderLeftRotY) / 2;
@@ -131,7 +131,8 @@ public class GestureHandler : MonoBehaviour {
                     _curHandState = handState.DOWN;
                     float temp = _maxRotY;
                     _maxRotY = 0;
-                    return temp;
+                    if(temp != 0)
+                        return (temp-10)/80f;
                 }
                 break;
             default: Debug.LogWarning("detectFlap no STATE"); break;
