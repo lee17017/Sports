@@ -154,7 +154,7 @@ public class KinectPointManAvatarModel : BasicAvatarModel
         foreach (JointType jt in fromToJoints.Keys)
         {
             //transforms[jt].rotation = getRawWorldRotation(jt);
-            jointTransforms[jt].position = getRawWorldPosition(jt);
+            jointTransforms[jt].position = getRawWorldPosition(jt)+new Vector3(0,-100,0);
             // debug: show computed rotatations
                 jointTransforms[jt].rotation = applyRelativeRotationChange(jt, Quaternion.identity);
         }
