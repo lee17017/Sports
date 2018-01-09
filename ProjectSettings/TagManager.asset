@@ -9,6 +9,7 @@ TagManager:
   - Master
   - GestureHandler
   - Beacon
+  - PlayerProjectile
   layers:
   - Default
   - TransparentFX
