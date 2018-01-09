@@ -81,9 +81,9 @@ public class Player : MonoBehaviour {
 
         if (_isKinectEnabled) {
             //calculate flap force
-            GestureHandler.calcPositions();
-            float flap = GestureHandler.detectFlap();
-            bool shoot = GestureHandler.detectShoot();
+            GestureHandler.Instance.calcPositions();
+            float flap = GestureHandler.Instance.detectFlap();
+            bool shoot = GestureHandler.Instance.detectShoot();
 
             _currentForceY += flap;
         } else {
