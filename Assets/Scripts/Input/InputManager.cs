@@ -15,6 +15,13 @@ public class InputManager : MonoBehaviour {
             _player.OnFlapWings();
             Debug.Log("Up Arrow Pressed");
         }
+        if (Input.GetKey(KeyCode.LeftArrow)) {
+            _player.OnLean(-1f);
+        }else if (Input.GetKey(KeyCode.RightArrow)) {
+            _player.OnLean(1f);
+        } else {
+            _player.OnLean(0f);
+        }
     }
 
 }
