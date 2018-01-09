@@ -18,7 +18,7 @@ public class MenuManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _handState = GestureHandler.getRightHandState();
+        _handState = GestureHandler.Instance.getRightHandState();
 
         //Überprüfen, ob man die rechte Hand zuhält
         if (_handState == true)

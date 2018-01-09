@@ -6,111 +6,99 @@ using System;
 
 public class GestureHandler : MonoBehaviour {
 
-    public static GestureHandler instance;
+    private static GestureHandler _instance = null;
+    public static GestureHandler Instance { get { return _instance; } }
  
-    public static BasicAvatarModel MoCapAvatar;
+    private BasicAvatarModel _moCapAvatar;
+   
     //flap Gestic Variables:
     public enum handState {MID, UP, MIDtoDOWN, DOWN, MIDtoUP }; //maybe rename enum 
-    private static handState curHandState = handState.MID;
+    private handState _curHandState = handState.MID;
 
-    private static Vector3 handRightRel;
-    private static Vector3 handLeftRel;
-
-
-    //position limits - delete maybe
-    private static float handDetUpY = 0.4f;
-    private static float handDetDownY = -0.2f;
-    private static float handDetX = 0.4f; // 0.6 * cos(rot) change for more specific calculation to DO
-    private static float handDetZ = 0.3f;
-    private static float max=0, min=0;
+    //position limits
+    //private float _handDetX = 0.4f; // 0.6 * cos(rot) change for more specific calculation to DO
+    private Vector3 _handRightRel;
+    private Vector3 _handLeftRel;
+    private float _handDetZ = 0.3f;
 
     //rotational informations
-    private static float shoulderRightRotY, shoulderLeftRotY;
-    private static float shoulderRightRotZ, shoulderLeftRotZ;
-    private static float maxRotY;
-    private static float rotYOffset = 10;
-    private static float detRotUpY = 0;
-    private static float detRotDownY = -10;
+    //private float _shoulderRightRotZ, _shoulderLeftRotZ;
+    private float _shoulderRightRotY, _shoulderLeftRotY;
+    private float _maxRotY;
+    private float _rotYOffset = 10;//offset to shift detectionarea upwards= ... _shoulderXRoty = originalRot + offset
+    private float _detRotUpY = 0;
+    private float _detRotDownY = -10;
 
     //shoot Gestic Variables:
     public enum shootState { NORM, SHOOT }; //I am terible at naming stuff
-    private static shootState curShootState = shootState.NORM;
-    private static float shootDetZ = 0.5f;
-    private static float shootBackDetZ = 0.3f;
+    private shootState _curShootState = shootState.NORM;
+    private float _shootDetZ = 0.5f;
+    private float _shootBackDetZ = 0.3f;
 
     //testVariables:
-    private static float flapCnt = 0;
+    private float flapCnt = 0;
 
-    private static float rightMax=0, rightMin=20, leftMax=0, leftMin=20;
-    private static float rMaxCnt = 0, rMinCnt = 0, lMaxCnt = 0, lMinCnt = 0;
+    private float rightMax=0, rightMin=20, leftMax=0, leftMin=20;
+    private float rMaxCnt = 0, rMinCnt = 0, lMaxCnt = 0, lMinCnt = 0;
 	// Use this for initialization
     void Awake()
     {
-        if (instance != null)
+        if (_instance != null)
         {
             Destroy(gameObject);
         }
         else
         {
-            instance = this;
-            MoCapAvatar = GetComponent<KinectPointManAvatarModel>();
+            _instance = this;
+            _moCapAvatar = GetComponent<KinectPointManAvatarModel>();
             DontDestroyOnLoad(this.gameObject);
         }
     }
 
-	// Update is called once per frame
-	void Update () {
-     /*   Vector3 spineMid = MoCapAvatar.getRawWorldPosition(JointType.SpineMid);
-        Vector3 handRightRel = MoCapAvatar.getRawWorldPosition(JointType.HandRight)-spineMid;
-        Vector3 handLeftRel = MoCapAvatar.getRawWorldPosition(JointType.HandLeft)-spineMid;
-        HandState h = MoCapAvatar.getRightHandState();
-        detectFlap(handRightRel, handLeftRel);
-        detectShoot(handRightRel, handLeftRel);
-        detectRightHandState(h);
-        //minMaxDetect(handRightRel.x, handLeftRel.x);
-       // Debug.Log("r: " + handRightRel + " -------- l: " + handLeftRel);*/
-	}
 
 
-    public static bool getRightHandState()
+
+    public bool getRightHandState() //returns true if right Hand is closed
     { 
-        bool temp = MoCapAvatar.getRightHandState() == HandState.Closed;
+        bool temp = _moCapAvatar.getRightHandState() == HandState.Closed;
         return temp;
     }
 
-    public static void giveMeMyInfo() {
-        Debug.Log(shoulderRightRotZ);
+    public void giveMeMyInfo() {
+        Debug.Log("Info: ");
     }
-    public static void calcPositions() {
-        Vector3 spineShoulder = MoCapAvatar.getRawWorldPosition(JointType.SpineShoulder);
-        handRightRel = MoCapAvatar.getRawWorldPosition(JointType.HandRight) - spineShoulder;
-        handLeftRel = MoCapAvatar.getRawWorldPosition(JointType.HandLeft) - spineShoulder;
 
-        shoulderRightRotY = Mathf.Asin(handRightRel.y / handRightRel.magnitude) * 180 / Mathf.PI + rotYOffset;
-        shoulderRightRotZ = Mathf.Asin(handRightRel.z / handRightRel.magnitude) * 180 / Mathf.PI + rotYOffset;
+    public void calcPositions() {//call this before retrieving detectInformations
+        Vector3 spineShoulder = _moCapAvatar.getRawWorldPosition(JointType.SpineShoulder);
+        _handRightRel = _moCapAvatar.getRawWorldPosition(JointType.HandRight) - spineShoulder;
+        _handLeftRel = _moCapAvatar.getRawWorldPosition(JointType.HandLeft) - spineShoulder;
 
-        shoulderLeftRotY = Mathf.Asin(handLeftRel.y / handRightRel.magnitude) * 180 / Mathf.PI + rotYOffset;
-        shoulderLeftRotZ = Mathf.Asin(handLeftRel.z / handRightRel.magnitude) * 180 / Mathf.PI + rotYOffset;
+        _shoulderRightRotY = Mathf.Asin(_handRightRel.y / _handRightRel.magnitude) * 180 / Mathf.PI + _rotYOffset;
+        //_shoulderRightRotZ = Mathf.Asin(_handRightRel.z / _handRightRel.magnitude) * 180 / Mathf.PI + _rotYOffset;
+
+        _shoulderLeftRotY = Mathf.Asin(_handLeftRel.y / _handRightRel.magnitude) * 180 / Mathf.PI + _rotYOffset;
+        //_shoulderLeftRotZ = Mathf.Asin(_handLeftRel.z / _handRightRel.magnitude) * 180 / Mathf.PI + _rotYOffset;
     }
-    public static bool detectShoot()
+
+    public bool detectShoot() //returns true when shoot gesture is detected
     {
-        switch (curShootState)
+        switch (_curShootState)
         {
             case shootState.NORM:
-                if(handRightRel.z > shootDetZ || handLeftRel.z > shootDetZ)
+                if(_handRightRel.z > _shootDetZ || _handLeftRel.z > _shootDetZ)
                 //if ((handRightRel.z > shootDetZ && handLeftRel.z < shootDetZ) || (handRightRel.z < shootDetZ && handLeftRel.z > shootDetZ))
                 {
-                    curShootState = shootState.SHOOT;
-                    curHandState = handState.MID;
-                    maxRotY = 0;
+                    _curShootState = shootState.SHOOT;
+                    _curHandState = handState.MID;
+                    _maxRotY = 0;
                     Debug.Log("PEEEEEEEEEEEEEEEEEEEEEEEEEEWWWWWWWWWWW");
                     return true;
                 }
                 break;
             case shootState.SHOOT:
-                if (handRightRel.z < shootBackDetZ && handLeftRel.z < shootBackDetZ)
+                if (_handRightRel.z < _shootBackDetZ && _handLeftRel.z < _shootBackDetZ)
                 {
-                    curShootState = shootState.NORM;
+                    _curShootState = shootState.NORM;
                 }
                 break;
 
@@ -119,30 +107,30 @@ public class GestureHandler : MonoBehaviour {
         return false;
     }   
 
-    public static float detectFlap()
+    public float detectFlap() //returns a float between x and y when flap is detected(1frame), else 0
     {
-        if (handRightRel.z > handDetZ) { return 0.0f; }
-        float avg = (shoulderRightRotY + shoulderLeftRotY) / 2;
-        switch (curHandState)
+        if (_handRightRel.z > _handDetZ) {return 0.0f; }
+        float avg = (_shoulderRightRotY + _shoulderLeftRotY) / 2;
+        switch (_curHandState)
         {
             case handState.UP:
-                if (avg > maxRotY)
-                    maxRotY = avg;
-                if (shoulderRightRotY < detRotUpY && shoulderLeftRotY < detRotUpY)
-                    curHandState = handState.MID;
+                if (avg > _maxRotY)
+                    _maxRotY = avg;
+                if (_shoulderRightRotY < _detRotUpY && _shoulderLeftRotY < _detRotUpY)
+                    _curHandState = handState.MID;
                 break;
             case handState.DOWN:
-                if (shoulderRightRotY > detRotDownY && shoulderLeftRotY > detRotDownY)
-                    curHandState = handState.MID;
+                if (_shoulderRightRotY > _detRotDownY && _shoulderLeftRotY > _detRotDownY)
+                    _curHandState = handState.MID;
                 break;
             case handState.MID: //to do handle start flap
-                if (shoulderRightRotY > detRotUpY && shoulderLeftRotY > detRotUpY)
-                    curHandState = handState.UP;
-                else if (shoulderRightRotY < detRotDownY && shoulderLeftRotY < detRotDownY) {
-                    Debug.Log("Flap: " + maxRotY);
-                    curHandState = handState.DOWN;
-                    float temp = maxRotY;
-                    maxRotY = 0;
+                if (_shoulderRightRotY > _detRotUpY && _shoulderLeftRotY > _detRotUpY)
+                    _curHandState = handState.UP;
+                else if (_shoulderRightRotY < _detRotDownY && _shoulderLeftRotY < _detRotDownY) {
+                    Debug.Log("Flap: " + _maxRotY);
+                    _curHandState = handState.DOWN;
+                    float temp = _maxRotY;
+                    _maxRotY = 0;
                     return temp;
                 }
                 break;
@@ -151,52 +139,53 @@ public class GestureHandler : MonoBehaviour {
         }
         return 0;
     }
-    public static bool detectFlap2() // change to float
+    /*
+    public bool detectFlap2() // detects flap with positions - probably obsolete
     {
-        if (handRightRel.x < handDetX || handLeftRel.x > -handDetX || handLeftRel.z > handDetZ || handRightRel.z > handDetZ)
+        if (_handRightRel.x < _handDetX || _handLeftRel.x > -_handDetX || _handLeftRel.z > _handDetZ || _handRightRel.z > _handDetZ)
         {
-            if (curHandState != handState.MID)
+            if (_curHandState != handState.MID)
             {
-                curHandState = handState.MID;
+                _curHandState = handState.MID;
             }
             return false;
         }
         
-        switch (curHandState)
+        switch (_curHandState)
         {
             case handState.MIDtoUP:
-                if (handRightRel.y > handDetUpY && handLeftRel.y > handDetUpY)
-                    curHandState = handState.UP;
+                if (_handRightRel.y > _handDetUpY && _handLeftRel.y > _handDetUpY)
+                    _curHandState = handState.UP;
                 break;
             case handState.UP:
-                if (handRightRel.y > max || handLeftRel.y > max)
-                    max = handRightRel.y > handLeftRel.y ? handRightRel.y : handLeftRel.y;
+                if (_handRightRel.y > _max || _handLeftRel.y > _max)
+                    _max = _handRightRel.y > _handLeftRel.y ? _handRightRel.y : _handLeftRel.y;
 
-                if (handRightRel.y < handDetUpY && handLeftRel.y < handDetUpY)
-                    curHandState = handState.MIDtoDOWN;
+                if (_handRightRel.y < _handDetUpY && _handLeftRel.y < _handDetUpY)
+                    _curHandState = handState.MIDtoDOWN;
                 break;
             case handState.MIDtoDOWN:
-                if (handRightRel.y < handDetDownY && handLeftRel.y < handDetDownY)
+                if (_handRightRel.y < _handDetDownY && _handLeftRel.y < _handDetDownY)
                 {
-                    curHandState = handState.DOWN;
+                    _curHandState = handState.DOWN;
                     flapCnt++;
                     Debug.LogWarning("Flap"+flapCnt);
                     return true;
                 }
                 break;
             case handState.DOWN:
-                if (handRightRel.y < min || handLeftRel.y < min)
-                    min = handRightRel.y < handLeftRel.y ? handRightRel.y : handLeftRel.y;
+                if (_handRightRel.y < _min || _handLeftRel.y < _min)
+                    _min = _handRightRel.y < _handLeftRel.y ? _handRightRel.y : _handLeftRel.y;
 
-                if (handRightRel.y > handDetDownY && handLeftRel.y > handDetDownY)
-                    curHandState = handState.MIDtoUP;
+                if (_handRightRel.y > _handDetDownY && _handLeftRel.y > _handDetDownY)
+                    _curHandState = handState.MIDtoUP;
                 break;
             case handState.MID: //to do handle start flap
-                if (handRightRel.y > handDetUpY && handLeftRel.y > handDetUpY)
-                    curHandState = handState.UP;
-                else if (handRightRel.y < handDetDownY && handLeftRel.y < handDetDownY)
+                if (_handRightRel.y > _handDetUpY && _handLeftRel.y > _handDetUpY)
+                    _curHandState = handState.UP;
+                else if (_handRightRel.y < _handDetDownY && _handLeftRel.y < _handDetDownY)
                 {
-                    curHandState = handState.DOWN;
+                    _curHandState = handState.DOWN;
                     flapCnt+=0.5f;
                     Debug.LogWarning("Flap" + flapCnt);
                 }
@@ -206,7 +195,7 @@ public class GestureHandler : MonoBehaviour {
         }
         return false;
     }
-
+    */
 
     void OnApplicationQuit()
     {

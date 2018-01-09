@@ -11,8 +11,8 @@ public class tester : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        GestureHandler.calcPositions();
-        GestureHandler.detectFlap();
-        GestureHandler.detectShoot();
+        GestureHandler.Instance.calcPositions();
+        GestureHandler.Instance.detectFlap();
+        GestureHandler.Instance.detectShoot();
 	}
 }
