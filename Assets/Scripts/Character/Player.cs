@@ -10,13 +10,10 @@ public class Player : MonoBehaviour {
     [Header("Movement")]
 
     [SerializeField]
-    private float _gravity;
+    private float _liftConstant;
 
     [SerializeField]
-    private float _lift;
-
-    [SerializeField, Tooltip("Time until force in Y direction is 0 after wing beat")]
-    private float _flapTime;
+    private float _gravityConstant;
 
     [SerializeField]
     private float _autoMoveX = 0;
@@ -32,21 +29,20 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private float _borderRight = 0;
 
-    
-    private float _currentForceY = 0;
-    private float _lastFlapStamp = 0;
+
     private float _currentLeanSpeed;
     private float _currentPositionInBorder = 0;
 
     private Collider _collider;
-
     private Rigidbody _rig;
 
 	// Use this for initialization
 	void Start () {
+        //initialize gravity vector in -y direction
         Physics.gravity = new Vector3(0, -1f, 0);
         _rig = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
+
         //if border is not set, try get the camera view and calculate
         //this is more of a fallback and should not be used necessarily
         if(_borderLeft == 0 && _borderRight == 0) {
@@ -63,11 +59,6 @@ public class Player : MonoBehaviour {
         GameManager.Instance.OnDamagePlayer(damage);
     }
 
-    public void OnFlapWings() {
-        Debug.Log("OnFLapWings");
-        _lastFlapStamp = Time.realtimeSinceStartup;
-    }
-
     //normalized value betweeen -1 and 1
     //with keybord we assume maximum values for now
     public void OnLean(float amount) {
@@ -76,9 +67,12 @@ public class Player : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        float deltaX = 0, deltaY = 0;
-        const float deltaZ = 0;
+        float x_vel = 0;
+
+        //get y velocity from rigidbody
         float y_vel = _rig.velocity.y;
+
+        //y velocity border cases
         if (y_vel < -5f)
         { 
             _rig.velocity = new Vector3(0, -1f, 0); 
@@ -87,32 +81,37 @@ public class Player : MonoBehaviour {
         else if (y_vel > 5f)
         { _rig.velocity = new Vector3(0, 1f, 0); }
 
-        deltaX += _autoMoveX * Time.deltaTime;
-        deltaX += _currentLeanSpeed * Time.deltaTime;
+        //calculate x velocity from time and fixed auto speed
+        x_vel += _autoMoveX * Time.deltaTime;
+
+        //leaning
+        x_vel += _currentLeanSpeed * Time.deltaTime;
+        
 
         if (_isKinectEnabled) {
             //calculate flap force
             GestureHandler.Instance.calcPositions();
+            //detect if flap or shoot gesture occured
             float flap = GestureHandler.Instance.detectFlap();
             bool shoot = GestureHandler.Instance.detectShoot();
-            if (flap != 0)
-            {
-                Debug.Log(flap);
-                if (y_vel < 0)
-                    _rig.velocity = new Vector3(0, y_vel / 2f, 0);
-                _rig.AddForce(new Vector3(0, flap*_lift, 0));
-            }
-            _currentForceY += flap*_lift;
-        } else {
-            _currentForceY += GetFlapForce(Time.realtimeSinceStartup - _lastFlapStamp);
-        }
-        _currentForceY -= 2f*Time.deltaTime;
-        deltaY = _currentForceY;
 
-        //apply translation
-        gameObject.transform.Translate(new Vector3(deltaX, 0, 0));
+            if (flap > 0)
+            {
+                Debug.Log("Flap detected with force: " + flap + "  ,normalized from 0 to 1");
+                //if character is falling down reduce gravity on flap
+                //so it is a lot easier to recover from falling
+                if (y_vel < 0) {
+                    _rig.velocity = new Vector3(0, y_vel / 2f, 0);
+                }
+                //add force
+                _rig.AddForce(new Vector3(0, GetFlapForce(flap), 0));
+            }
+        }
+
+        //apply translation for constant speed in +x direction (right)
+        gameObject.transform.Translate(new Vector3(x_vel, 0, 0));
         
-        //keep player in bounds
+        //keep player in bounds with leaning active
         _currentPositionInBorder += _currentLeanSpeed * Time.deltaTime;
         
         if (_currentPositionInBorder < _borderLeft) {
@@ -123,21 +122,14 @@ public class Player : MonoBehaviour {
             _currentPositionInBorder = _borderRight;
         }
         
-        //update position in game manager
+        //update position in game manager in order to detect if the player finished the level
         GameManager.Instance.UpdatePlayerPosition(transform.position.x);
     }
 
-    private float GetFlapForce(float elapsedTime) {
-        //function to calculate the force after the player hit the wings
-        //this basic function is linear, and should be more complex and realistic
-        return Mathf.Max((_flapTime - elapsedTime) * _lift, 0);
+    //calculate the initial force which is then applied to the rigidbody
+    private float GetFlapForce(float flapForce) {
+        return flapForce * _liftConstant;
     }
-
-    //physically correct gravity calculation for input time in seconds; not sure if works for the game
-    private float GetGravity(float elapsedTime) {
-        return (_gravity * (elapsedTime * 60) * (elapsedTime * 60)) / 2;
-    }
-
 
     //Gizmos for player movement borders
     private void OnDrawGizmos() {
