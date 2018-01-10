@@ -10,6 +10,8 @@ TagManager:
   - GestureHandler
   - Beacon
   - PlayerProjectile
+  - EnemyProjectile
+  - CameraBox
   layers:
   - Default
   - TransparentFX

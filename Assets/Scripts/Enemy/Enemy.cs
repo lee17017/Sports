@@ -41,9 +41,11 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private float _accuracy; //1 = Zielt genau auf Spieler, <1 und >0 ist ungenauigkeitswahrscheinlichkeit
     [SerializeField]
-    private shootingTarget _gunTarget; // Auf wen geschossen wird
+    private shootingTarget _gunTarget; // Hier wird festgelegt, in welche Richtung der Gegner schießt (auf den Spieler oder in feste Richtungen)
+    //[SerializeField]
+    //private shootingTarget _gunTargetModifier2; // Richtungsmodifier
     [SerializeField]
-    private GameObject _enemyProjectile;
+    private GameObject _enemyProjectile; // Das Projektil Prefab
 
     private bool _onCooldown = false;
 
@@ -63,25 +65,21 @@ public class Enemy : MonoBehaviour
     {
         transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
         _player = GameObject.FindGameObjectWithTag("Player");
+        _beacon.transform.position = new Vector3(_beacon.transform.position.x, _beacon.transform.position.y, 0f);
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        if (_canMove)
+        if (_canMove && _isActive)
         {
             Move();
         }
-        if (_canShoot)
-        {
-            Shoot();
-        }
-        if (_isActive == false && GetComponent<Renderer>().isVisible)
-        {
-            _isActive = true;
-            InitialiseEnemy();
-        }
+        //if (_canShoot)
+        //{
+        //    Shoot();
+        //}
     }
 
     void InitialiseEnemy()
@@ -95,7 +93,7 @@ public class Enemy : MonoBehaviour
     }
 
     // Hier kommen alle Kollisionsabfragen rein
-    private void OnTriggerEnter(Collider collision)
+    void OnTriggerEnter(Collider collision)
     {
         //Wenn er mit dem Spieler kollidiert, kassiert dieser ein Schaden und der Gegner stirbt
         if (collision.gameObject.tag == "Player")
@@ -109,12 +107,28 @@ public class Enemy : MonoBehaviour
             LooseHealth(1);
         }
         // Kollision mit Gegn. Projektil auch 1 Schaden, aber ihre Bewegungsgeschwindigkeit erhöht sich.
+        /*
         else if (collision.gameObject.tag == "EnemyProjectile")
         {
             LooseHealth(1);
             _movementSpeed *= 1.5f;
         }
+         */
+        else if (collision.gameObject.tag == "CameraBox")
+        {
+            if (_isActive)
+            {
+                _isActive = false;
+                StartCoroutine(TimeToDie());
+            }
+            else
+            {
+                InitialiseEnemy();
+                _isActive = true;
+            }
+        }
     }
+
     // Leben verlieren
     void LooseHealth(int damage)
     {
@@ -131,6 +145,34 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
+    // Wird aufgerufen, wenn der Gegner die sichtbarkeit verlässt, er stirbt dann irgendwann
+    IEnumerator TimeToDie()
+    {
+        yield return new WaitForSeconds(_timeToLive);
+        Destroy(this.gameObject);
+    }
+
+    /* Alter OnBecame(In-)Visible Code
+    void OnBecameInvisible()
+    {
+        //Wenn ein Gegner nicht mehr in der kamera sichtbar ist, verschwindet es nach kurzer Zeit
+        if (_isActive)
+        {
+            _isActive = false;
+            StartCoroutine(TimeToDie());
+        }
+    }
+    void OnBecameVisible()
+    {
+        if (!_isActive)
+        {
+            InitialiseEnemy();
+            _isActive = true;
+        }
+    }
+     */
+
+    // Der Bereich, der für die Bewegung verantwortlich ist
     #region Movement
     void Move()
     {
@@ -145,7 +187,7 @@ public class Enemy : MonoBehaviour
         if (_moveToPlayer)
         {
             _beacon.transform.position = _player.transform.position;
-            if (_updateBeaconPeriod >= 0)
+            if (_updateBeaconPeriod > 0)
             {
                 StartCoroutine(UpdateBeacon());
             }
@@ -158,16 +200,19 @@ public class Enemy : MonoBehaviour
     //Wartet und lässt die Richtung aktualisieren
     IEnumerator UpdateBeacon()
     {
-        new WaitForSeconds(_updateBeaconPeriod);
+        yield return new WaitForSeconds(_updateBeaconPeriod);
         GetMovingDirection();
-        yield return null;
     }
     #endregion
 
+    // Code, der das Schießen umsetzt
+    #region Shooting
     void Shoot()
     {
         if (_canShoot)
         {
+            _canShoot = false;
+
             //really shoots, TBD
             Vector3 shootDirection = new Vector3(-1, 0, 0);
             switch (_gunTarget)
@@ -185,14 +230,15 @@ public class Enemy : MonoBehaviour
                     shootDirection = new Vector3(1, 0, 0);
                     break;
                 case shootingTarget.Player:
-                    shootDirection = _player.transform.position;
+                    shootDirection = _player.transform.position - this.transform.position;
                     break;
             }
             shootDirection = shootDirection.normalized;
             GameObject projc = Instantiate(_enemyProjectile, this.transform.position, Quaternion.identity);
+            projc.GetComponent<EnemyProjectile>().movementSpeed = this._movementSpeed * 2f;
+            projc.GetComponent<EnemyProjectile>().direction = shootDirection;
 
-
-            float cd = Random.value * _gunMaxCD + _gunMinCD;
+            float cd = (Random.value * _gunMaxCD) + _gunMinCD;
             StartCoroutine(GunCooldown(cd));
         }
     }
@@ -201,9 +247,10 @@ public class Enemy : MonoBehaviour
     IEnumerator GunCooldown(float cd)
     {
         _canShoot = false;
-        new WaitForSeconds(cd);
+        yield return new WaitForSeconds(cd);
         _canShoot = true;
-        yield return null;
+        Shoot();
     }
+    #endregion
 
 }

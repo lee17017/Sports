@@ -94,6 +94,13 @@ public class Player : MonoBehaviour {
             //calculate flap force
             GestureHandler.Instance.calcPositions();
             float flap = GestureHandler.Instance.detectFlap();
+
+            //For Keyboard Use:
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                flap = 0.35f;
+            }
+
             bool shoot = GestureHandler.Instance.detectShoot();
             if (flap != 0)
             {

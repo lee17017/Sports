@@ -21,11 +21,6 @@ public abstract class Enemy1 : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-        if(_isActive) //Wird später erst nach Levelweite aktiviert
-        {
-            Act();
-        }
 	}
 
     // Hier kommen alle Kollisionsabfragen rein

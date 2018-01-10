@@ -33,10 +33,10 @@ public class EnemyShoot : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Enemy.isActive == true)
-        {
+        //if (Enemy.isActive == true)
+        //{
 
-        }
+        //}
 	}
 
     void Shoot()

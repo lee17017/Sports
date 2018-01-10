@@ -9,46 +9,47 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1228575419699888}
+  m_RootGameObject: {fileID: 1455857397045764}
   m_IsPrefabParent: 1
---- !u!1 &1228575419699888
+--- !u!1 &1455857397045764
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4670224994985644}
-  - component: {fileID: 33571933391402706}
-  - component: {fileID: 65641439183777500}
-  - component: {fileID: 23091518290145968}
-  - component: {fileID: 114205243083291298}
+  - component: {fileID: 4259257659751930}
+  - component: {fileID: 33183936322509240}
+  - component: {fileID: 23765108957627244}
+  - component: {fileID: 114377666061597806}
+  - component: {fileID: 135899992327671624}
+  - component: {fileID: 54084162273111396}
   m_Layer: 0
-  m_Name: FastFacingPlayer
-  m_TagString: Enemy
+  m_Name: Projectile_Enemy
+  m_TagString: EnemyProjectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4670224994985644
+--- !u!4 &4259257659751930
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1228575419699888}
+  m_GameObject: {fileID: 1455857397045764}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 33.673542, y: -6.6498923, z: 1165.0637}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 10, y: 0, z: 0}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &23091518290145968
+--- !u!23 &23765108957627244
 MeshRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1228575419699888}
+  m_GameObject: {fileID: 1455857397045764}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -75,39 +76,50 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &33571933391402706
+--- !u!33 &33183936322509240
 MeshFilter:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1228575419699888}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &65641439183777500
-BoxCollider:
+  m_GameObject: {fileID: 1455857397045764}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &54084162273111396
+Rigidbody:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1228575419699888}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
+  m_GameObject: {fileID: 1455857397045764}
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114205243083291298
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 120
+  m_CollisionDetection: 0
+--- !u!114 &114377666061597806
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1228575419699888}
+  m_GameObject: {fileID: 1455857397045764}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca56261fbea3a4145840ed372a89c4aa, type: 3}
+  m_Script: {fileID: 11500000, guid: 52a22a4528b1de84db0dad713375b903, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 2
-  _timeToLive: 0
-  isActive: 1
-  _player: {fileID: 0}
-  _movementSpeed: 0.2
-  _updateBeaconPeriod: 0.2
+  direction: {x: 0, y: 0, z: 0}
+  movementSpeed: 0
+--- !u!135 &135899992327671624
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1455857397045764}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
