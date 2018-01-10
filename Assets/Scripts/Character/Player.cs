@@ -106,6 +106,24 @@ public class Player : MonoBehaviour {
                 //add force
                 _rig.AddForce(new Vector3(0, GetFlapForce(flap), 0));
             }
+        } 
+        //for testing
+        else {
+            if (Input.GetKeyDown(KeyCode.UpArrow)) {
+                if (y_vel < 0) {
+                    _rig.velocity = new Vector3(0, y_vel / 2f, 0);
+                }
+                //add force
+                _rig.AddForce(new Vector3(0, GetFlapForce(.8f), 0));
+                Debug.Log("Up Arrow Pressed");
+            }
+            if (Input.GetKey(KeyCode.LeftArrow)) {
+                OnLean(-1f);
+            } else if (Input.GetKey(KeyCode.RightArrow)) {
+                OnLean(1f);
+            } else {
+                OnLean(0f);
+            }
         }
 
         //apply translation for constant speed in +x direction (right)
