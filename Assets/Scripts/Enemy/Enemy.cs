@@ -86,7 +86,7 @@ public class Enemy : MonoBehaviour
 
     void InitialiseEnemy()
     {
-        GetMovingDirection(); //erste ,mal _direction setzen
+        GetMovingDirection(); //erste Mal _direction setzen
 
         if (_canShoot)
         {
@@ -97,15 +97,18 @@ public class Enemy : MonoBehaviour
     // Hier kommen alle Kollisionsabfragen rein
     private void OnTriggerEnter(Collider collision)
     {
+        //Wenn er mit dem Spieler kollidiert, kassiert dieser ein Schaden und der Gegner stirbt
         if (collision.gameObject.tag == "Player")
         {
             _player.GetComponent<Player>().Damage(1);
             Die();
         }
+        // Beim Aufprall eines Spieler-projektils verlieren sie per se 1 Leben.
         else if (collision.gameObject.tag == "PlayerProjectile")
         {
             LooseHealth(1);
         }
+        // Kollision mit Gegn. Projektil auch 1 Schaden, aber ihre Bewegungsgeschwindigkeit erhöht sich.
         else if (collision.gameObject.tag == "EnemyProjectile")
         {
             LooseHealth(1);
