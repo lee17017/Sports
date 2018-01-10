@@ -20,8 +20,9 @@ public class CameraController : MonoBehaviour {
 	}
 
     private void LateUpdate() {
-        _camera.transform.Translate(new Vector3(_player.AutoMoveX * Time.deltaTime, 0, 0));
-
+        if (_player.IsActive) {
+            _camera.transform.Translate(new Vector3(_player.AutoMoveX * Time.deltaTime, 0, 0));
+        }
         //Vector3 screenPoint = _camera.WorldToViewportPoint(_player.transform.position);
         //bool onScreen = screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
 

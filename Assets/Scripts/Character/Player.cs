@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour {
 
     [Header("Debug")]
+    [SerializeField]
     private bool _isKinectEnabled = true;
 
     [Header("Movement")]
@@ -13,7 +14,7 @@ public class Player : MonoBehaviour {
     private float _liftConstant;
 
     [SerializeField]
-    private float _gravityConstant;
+    private float _gravityConstant = 1;
 
     [SerializeField]
     private float _autoMoveX = 0;
@@ -29,6 +30,8 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private float _borderRight = 0;
 
+    [SerializeField]
+    private GameObject _projectilePrefab;
 
     private float _currentLeanSpeed;
     private float _currentPositionInBorder = 0;
@@ -36,12 +39,17 @@ public class Player : MonoBehaviour {
     private Collider _collider;
     private Rigidbody _rig;
 
+    private bool _isActive = false;
+    public bool IsActive { get { return _isActive; } }
+
 	// Use this for initialization
 	void Start () {
         //initialize gravity vector in -y direction
-        Physics.gravity = new Vector3(0, -1f, 0);
+        Physics.gravity = new Vector3(0, -_gravityConstant, 0);
         _rig = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
+
+        _rig.useGravity = false;
 
         //if border is not set, try get the camera view and calculate
         //this is more of a fallback and should not be used necessarily
@@ -55,6 +63,11 @@ public class Player : MonoBehaviour {
         }
     }
 	
+    public void Activate() {
+        _isActive = true;
+        _rig.useGravity = true;
+    }
+
     public void Damage(int damage) {
         GameManager.Instance.OnDamagePlayer(damage);
     }
@@ -65,88 +78,92 @@ public class Player : MonoBehaviour {
         _currentLeanSpeed = amount * _leanSpeed;
     }
 
-	// Update is called once per frame
-	void Update () {
-        float x_vel = 0;
+    // Update is called once per frame
+    void Update() {
+        if (_isActive) { 
+            float x_vel = 0;
 
-        //get y velocity from rigidbody
-        float y_vel = _rig.velocity.y;
+            //get y velocity from rigidbody
+            float y_vel = _rig.velocity.y;
 
-        //y velocity border cases
-        if (y_vel < -5f)
-        { 
-            _rig.velocity = new Vector3(0, -1f, 0); 
-            Debug.Log("a"); 
-        }
-        else if (y_vel > 5f)
-        { _rig.velocity = new Vector3(0, 1f, 0); }
+            //y velocity border cases
+            
+            if (y_vel < -5f) {
+                _rig.velocity = new Vector3(0, -1f, 0);
+                Debug.Log("a");
+            } else if (y_vel > 5f) { _rig.velocity = new Vector3(0, 1f, 0); }
+            
 
-        //calculate x velocity from time and fixed auto speed
-        x_vel += _autoMoveX * Time.deltaTime;
+            //calculate x velocity from time and fixed auto speed
+            x_vel += _autoMoveX * Time.deltaTime;
 
-        //leaning
-        x_vel += _currentLeanSpeed * Time.deltaTime;
-        
+            //leaning
+            x_vel += _currentLeanSpeed * Time.deltaTime;
 
-        if (_isKinectEnabled) {
-            //calculate flap force
-            GestureHandler.Instance.calcPositions();
-            //detect if flap or shoot gesture occured
-            float flap = GestureHandler.Instance.detectFlap();
-            bool shoot = GestureHandler.Instance.detectShoot();
 
-            if (flap > 0)
-            {
-                Debug.Log("Flap detected with force: " + flap + "  ,normalized from 0 to 1");
-                //if character is falling down reduce gravity on flap
-                //so it is a lot easier to recover from falling
-                if (y_vel < 0) {
-                    _rig.velocity = new Vector3(0, y_vel / 2f, 0);
+            if (_isKinectEnabled) {
+                //calculate flap force
+                GestureHandler.Instance.calcPositions();
+                //detect if flap or shoot gesture occured
+                float flap = GestureHandler.Instance.detectFlap();
+                bool shoot = GestureHandler.Instance.detectShoot();
+
+                if (flap > 0) {
+                    Debug.Log("Flap detected with force: " + flap + "  ,normalized from 0 to 1");
+                    //if character is falling down reduce gravity on flap
+                    //so it is a lot easier to recover from falling
+                    if (y_vel < 0) {
+                        _rig.velocity = new Vector3(0, y_vel / 2f, 0);
+                    }
+                    //add force
+                    _rig.AddForce(new Vector3(0, GetFlapForce(flap), 0));
                 }
-                //add force
-                _rig.AddForce(new Vector3(0, GetFlapForce(flap), 0));
             }
-        } 
-        //for testing
-        else {
-            if (Input.GetKeyDown(KeyCode.UpArrow)) {
-                if (y_vel < 0) {
-                    _rig.velocity = new Vector3(0, y_vel / 2f, 0);
+            //for testing
+            else {
+                if (Input.GetKeyDown(KeyCode.UpArrow)) {
+                    if (y_vel < 0) {
+                        _rig.velocity = new Vector3(0, y_vel / 2f, 0);
+                    }
+                    //add force
+                    _rig.AddForce(new Vector3(0, GetFlapForce(.8f), 0));
+                    Debug.Log("Up Arrow Pressed");
                 }
-                //add force
-                _rig.AddForce(new Vector3(0, GetFlapForce(.8f), 0));
-                Debug.Log("Up Arrow Pressed");
+                if (Input.GetKey(KeyCode.LeftArrow)) {
+                    OnLean(-1f);
+                } else if (Input.GetKey(KeyCode.RightArrow)) {
+                    OnLean(1f);
+                } else {
+                    OnLean(0f);
+                }
             }
-            if (Input.GetKey(KeyCode.LeftArrow)) {
-                OnLean(-1f);
-            } else if (Input.GetKey(KeyCode.RightArrow)) {
-                OnLean(1f);
-            } else {
-                OnLean(0f);
-            }
-        }
 
-        //apply translation for constant speed in +x direction (right)
-        gameObject.transform.Translate(new Vector3(x_vel, 0, 0));
-        
-        //keep player in bounds with leaning active
-        _currentPositionInBorder += _currentLeanSpeed * Time.deltaTime;
-        
-        if (_currentPositionInBorder < _borderLeft) {
-            transform.Translate((_borderLeft - _currentPositionInBorder),0,0);
-            _currentPositionInBorder = _borderLeft;
-        }else if (_currentPositionInBorder > _borderRight){
-            transform.Translate(-(_currentPositionInBorder - _borderRight), 0, 0);
-            _currentPositionInBorder = _borderRight;
+            //apply translation for constant speed in +x direction (right)
+            gameObject.transform.Translate(new Vector3(x_vel, 0, 0));
+
+            //keep player in bounds with leaning active
+            _currentPositionInBorder += _currentLeanSpeed * Time.deltaTime;
+
+            if (_currentPositionInBorder < _borderLeft) {
+                transform.Translate((_borderLeft - _currentPositionInBorder), 0, 0);
+                _currentPositionInBorder = _borderLeft;
+            } else if (_currentPositionInBorder > _borderRight) {
+                transform.Translate(-(_currentPositionInBorder - _borderRight), 0, 0);
+                _currentPositionInBorder = _borderRight;
+            }
+
+            //update position in game manager in order to detect if the player finished the level
+            GameManager.Instance.UpdatePlayerPosition(transform.position.x);
         }
-        
-        //update position in game manager in order to detect if the player finished the level
-        GameManager.Instance.UpdatePlayerPosition(transform.position.x);
     }
 
     //calculate the initial force which is then applied to the rigidbody
     private float GetFlapForce(float flapForce) {
         return flapForce * _liftConstant;
+    }
+
+    private void Shoot() {
+        GameObject projectile = Instantiate(_projectilePrefab, transform.position + new Vector3(0, 0, 0), Quaternion.identity);
     }
 
     //Gizmos for player movement borders

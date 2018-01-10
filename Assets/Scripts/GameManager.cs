@@ -54,6 +54,12 @@ public class GameManager : MonoBehaviour {
 
         _life = _levelSettings.Life;
         _uiController.SetupUI(_levelSettings.Life);
+
+        if (FindObjectOfType<Player>()) {
+            FindObjectOfType<Player>().Activate();
+        } else {
+            throw new System.Exception("No Player in scene! ");
+        }
     }
 
     public void OnDamagePlayer(int damage) {
@@ -101,9 +107,12 @@ public class GameManager : MonoBehaviour {
         Debug.Log("Starting to load " + LevelPrefix + scene);
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(LevelPrefix + scene);
 
+        yield return new WaitForSecondsRealtime(1f);
+
         while (!asyncLoad.isDone) {
             yield return null;
         }
+        
         OnLevelLoaded();
         _isLoadingLevel = false;
         _currentLevel++;

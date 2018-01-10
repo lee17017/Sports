@@ -32,7 +32,7 @@ public class UIController : MonoBehaviour {
     }
 
     public void UpdateLife(int life) {
-
+        Destroy(_lifePanel.GetChild(_lifePanel.childCount - 1));
     }
 
 }
