@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour {
     [Header("IMPORTANT: will eventually crash game if not correct")]
     [SerializeField]
     private int _maxLevel = 0;
+    public int MaxLevel { get { return _maxLevel; } }
 
     private int _life;
 
