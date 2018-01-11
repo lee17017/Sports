@@ -21,6 +21,10 @@ public class GestureHandler : MonoBehaviour {
     private Vector3 _handLeftRel;
     private float _handDetZ = 0.3f;
 
+    private float _screenXDim = ;
+    private float _screenYDim = ;
+    
+
     //rotational informations
     //private float _shoulderRightRotZ, _shoulderLeftRotZ;
     private float _shoulderRightRotY, _shoulderLeftRotY;
@@ -35,6 +39,9 @@ public class GestureHandler : MonoBehaviour {
     private float _shootDetZ = 0.5f;
     private float _shootBackDetZ = 0.3f;
 
+    //head Tilt Variables:
+    private float _headRotY;
+    private float _headDetY ;//to Do set value
     //testVariables:
     private float flapCnt = 0;
 
@@ -78,6 +85,27 @@ public class GestureHandler : MonoBehaviour {
 
         _shoulderLeftRotY = Mathf.Asin(_handLeftRel.y / _handRightRel.magnitude) * 180 / Mathf.PI + _rotYOffset;
         //_shoulderLeftRotZ = Mathf.Asin(_handLeftRel.z / _handRightRel.magnitude) * 180 / Mathf.PI + _rotYOffset;
+
+        Vector3 headBase = _moCapAvatar.getRawWorldPosition(JointType.);
+        Vector3 head = _moCapAvatar.getRawWorldPosition(JointType.);
+        Vector3 headDir = head - headBase;
+        _headRotY = Mathf.Asin(headDir.y/headDir.magnitude)*180/Mathf.PI;
+    }
+    public Vector3 getMappedRightHandPosition()
+    {
+        Vector3 result = _handRightRel * +-calculations;
+        return result;
+
+    }
+
+    public int detectHeadTilt()
+    {
+        if (_headRotY < -_headDetY)
+            return -1;
+        else if (_headRotY < _headDetY)
+            return 0;
+        else
+            return 1;
     }
 
     public bool detectShoot() //returns true when shoot gesture is detected
