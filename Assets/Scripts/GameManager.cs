@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour {
 
     private const string LevelPrefix = "Level";
 
+    private const float LevelLoadingTime = 2f;
+
     private static GameManager _instance = null;
     public static GameManager Instance { get { return _instance; } }
 
@@ -40,8 +42,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    //called whenever a level is loaded
-    private void OnLevelLoaded() {
+    private void UpdateReferences() {
         //require some scripts and objects in scene
         _uiController = FindObjectOfType<UIController>();
         if (_uiController == null) {
@@ -49,10 +50,13 @@ public class GameManager : MonoBehaviour {
         }
 
         _levelSettings = FindObjectOfType<LevelSettings>();
-        if(_levelSettings == null) {
+        if (_levelSettings == null) {
             throw new System.Exception("No LevelSettings in scene! ");
         }
+    }
 
+    //called whenever a level is loaded
+    private void InitializeLevel() {
         _life = _levelSettings.Life;
         _uiController.SetupUI(_levelSettings.Life);
 
@@ -85,6 +89,17 @@ public class GameManager : MonoBehaviour {
         Debug.Log("Win!");
         if(_currentLevel+1 <= _maxLevel) {
             LoadLevel(_currentLevel+1);
+        } else {
+            Debug.Log("Congratulations! You beat the game!");
+            GameFinished();
+        }
+    }
+
+    private void GameFinished() {
+        _uiController.ShowWinScreen();
+
+        if (FindObjectOfType<Player>()) {
+            FindObjectOfType<Player>().Deactivate();
         }
     }
 
@@ -108,13 +123,19 @@ public class GameManager : MonoBehaviour {
         Debug.Log("Starting to load " + LevelPrefix + scene);
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(LevelPrefix + scene);
 
-        yield return new WaitForSecondsRealtime(1f);
-
         while (!asyncLoad.isDone) {
             yield return null;
         }
-        
-        OnLevelLoaded();
+
+        UpdateReferences();
+
+        for (float i = LevelLoadingTime; i > 0; i -= .01f) {
+            _uiController.UpdateGameReadyTime(i);
+            yield return new WaitForSecondsRealtime(.01f);
+        }
+
+        InitializeLevel();
+
         _isLoadingLevel = false;
         _currentLevel++;
         Debug.Log("Done loading " + LevelPrefix + scene);

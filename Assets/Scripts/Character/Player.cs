@@ -23,6 +23,10 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private float _leanSpeed = 1;
 
+    [Header("Gameplay")]
+    [SerializeField]
+    private float _invincibleTime;
+
     [Header("Level Border"), Tooltip("Left and right border as distance to player")]
     [SerializeField]
     private float _borderLeft = 0;
@@ -38,6 +42,8 @@ public class Player : MonoBehaviour {
 
     private Collider _collider;
     private Rigidbody _rig;
+
+    private float _invincibleTimestamp = 0;
 
     private bool _isActive = false;
     public bool IsActive { get { return _isActive; } }
@@ -68,8 +74,34 @@ public class Player : MonoBehaviour {
         _rig.useGravity = true;
     }
 
+    public void Deactivate() {
+        _isActive = false;
+        _rig.useGravity = false;
+        _rig.velocity = new Vector3(0,0,0);
+    }
+
     public void Damage(int damage) {
-        GameManager.Instance.OnDamagePlayer(damage);
+        if(_invincibleTimestamp != 0 && Time.time - _invincibleTimestamp > _invincibleTime) {
+            GameManager.Instance.OnDamagePlayer(damage);
+            _invincibleTimestamp = Time.time;
+            StartCoroutine(InvincibleFlash());
+        }
+    }
+
+    private IEnumerator InvincibleFlash() {
+        float step = .2f;
+        bool flash = true;
+        Color color = GetComponent<Renderer>().material.color;
+        while(Time.time - _invincibleTimestamp - step > _invincibleTime) { 
+            if (flash) {
+                GetComponent<Renderer>().material.color = Color.white;
+            } else {
+                GetComponent<Renderer>().material.color = color;
+            }
+            flash = !flash;
+            yield return new WaitForSeconds(step);
+        }
+        GetComponent<Renderer>().material.color = color;
     }
 
     //normalized value betweeen -1 and 1
@@ -88,10 +120,10 @@ public class Player : MonoBehaviour {
 
             //y velocity border cases
             
-            if (y_vel < -5f) {
-                _rig.velocity = new Vector3(0, -1f, 0);
-                Debug.Log("a");
-            } else if (y_vel > 5f) { _rig.velocity = new Vector3(0, 1f, 0); }
+            //if (y_vel < -5f) {
+            //    _rig.velocity = new Vector3(0, -1f, 0);
+            //    Debug.Log("a");
+            //} else if (y_vel > 5f) { _rig.velocity = new Vector3(0, 1f, 0); }
             
 
             //calculate x velocity from time and fixed auto speed
@@ -118,6 +150,9 @@ public class Player : MonoBehaviour {
                     //add force
                     _rig.AddForce(new Vector3(0, GetFlapForce(flap), 0));
                 }
+                if (shoot) {
+                    Shoot();
+                }
             }
             //for testing
             else {
@@ -126,8 +161,11 @@ public class Player : MonoBehaviour {
                         _rig.velocity = new Vector3(0, y_vel / 2f, 0);
                     }
                     //add force
-                    _rig.AddForce(new Vector3(0, GetFlapForce(.8f), 0));
+                    _rig.AddForce(new Vector3(0, GetFlapForce(1), 0));
                     Debug.Log("Up Arrow Pressed");
+                }
+                if (Input.GetKeyDown(KeyCode.Space)) {
+                    Shoot();
                 }
                 if (Input.GetKey(KeyCode.LeftArrow)) {
                     OnLean(-1f);
@@ -162,8 +200,11 @@ public class Player : MonoBehaviour {
         return flapForce * _liftConstant;
     }
 
+    //TBD Offset
     private void Shoot() {
-        GameObject projectile = Instantiate(_projectilePrefab, transform.position + new Vector3(0, 0, 0), Quaternion.identity);
+        Vector3 offset = new Vector3(0, 0, 0);
+        Quaternion rotation = Quaternion.Euler(0, 0, 90);
+        GameObject projectile = Instantiate(_projectilePrefab, transform.position + offset, rotation);
     }
 
     //Gizmos for player movement borders

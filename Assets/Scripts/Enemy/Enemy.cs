@@ -104,10 +104,10 @@ public class Enemy : MonoBehaviour
             Die();
         }
         // Beim Aufprall eines Spieler-projektils verlieren sie per se 1 Leben.
-        else if (collision.gameObject.tag == "PlayerProjectile")
-        {
-            LooseHealth(1);
-        }
+        //else if (collision.gameObject.tag == "PlayerProjectile")
+        //{
+        //    LooseHealth(1);
+        //}
         // Kollision mit Gegn. Projektil auch 1 Schaden, aber ihre Bewegungsgeschwindigkeit erhöht sich.
         else if (collision.gameObject.tag == "EnemyProjectile")
         {
@@ -116,7 +116,7 @@ public class Enemy : MonoBehaviour
         }
     }
     // Leben verlieren
-    void LooseHealth(int damage)
+    public void LooseHealth(int damage)
     {
         _health -= damage;
         if (_health <= 0)
