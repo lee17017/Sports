@@ -16,15 +16,16 @@ public class MainMenuUIController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        InitializeLevelSelection(_gameManager.MaxLevel, 3);
+        InitializeLevelSelection(_gameManager.MaxLevel, 2);
 	}
 
-    private void InitializeLevelSelection(int maxLevels, int unlockedLevels) {
-        for(int i=0; i<unlockedLevels; i++) {
+    //maxLevel = biggest level index, unlockedLevel = biggest unlocked level index
+    private void InitializeLevelSelection(int maxLevel, int unlockedLevel) {
+        for(int i=1; i<=unlockedLevel; i++) {
             Button temp = Instantiate(_levelSelectionButton, _levelSelectionPanel, false);
             temp.GetComponent<LevelSelectionButton>().Initialize(_gameManager, i);
         }
-        for(int i=unlockedLevels; i< maxLevels; i++) {
+        for(int i=unlockedLevel+1; i< maxLevel; i++) {
             Button temp = Instantiate(_levelSelectionButton, _levelSelectionPanel, false);
             temp.interactable = false;
         }

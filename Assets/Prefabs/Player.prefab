@@ -126,6 +126,7 @@ MonoBehaviour:
   _gravityConstant: 1
   _autoMoveX: 1
   _leanSpeed: 1
+  _invincibleTime: 0
   _borderLeft: 0
   _borderRight: 0
   _projectilePrefab: {fileID: 1464808774373196, guid: 518218b141d50e8408524a315396239f,

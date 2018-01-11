@@ -115,7 +115,7 @@ public class GameManager : MonoBehaviour {
         } else if(!_isLoadingLevel) {
             Debug.LogWarning("Already loading a Level, wait until done!");
         } else {
-            Debug.LogWarning("Level does not exist!");
+            Debug.LogWarning("Level " + level+ " does not exist!");
         }
     }
 
