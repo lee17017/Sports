@@ -213,12 +213,15 @@ public class Player : MonoBehaviour {
         //draw line for left border + line for bounding box max x bounds
         Gizmos.DrawLine(new Vector3(_borderLeft - _currentPositionInBorder, -10, 0) + transform.position,
             new Vector3(_borderLeft - _currentPositionInBorder, 10, 0) + transform.position);
+        UnityEditor.Handles.Label(new Vector3(_borderLeft - _currentPositionInBorder, 1, 0) + transform.position, "Left Border");
+
         Gizmos.DrawLine(new Vector3(_borderLeft - _currentPositionInBorder, -10, 0) + transform.position - GetComponent<Collider>().bounds.max, 
             new Vector3(_borderLeft - _currentPositionInBorder, 10, 0) + transform.position - GetComponent<Collider>().bounds.max);
 
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(new Vector3(_borderRight - _currentPositionInBorder, -10, 0) + transform.position,
             new Vector3(_borderRight - _currentPositionInBorder, 10, 0) + transform.position);
+        UnityEditor.Handles.Label(new Vector3(_borderRight - _currentPositionInBorder, 1, 0) + transform.position, "Right border");
     }
 
 }

@@ -5,6 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 
+    [Header("IMPORTANT: will eventually crash game if not correct")]
+    [SerializeField]
+    private int _maxLevel = 0;
+    public int MaxLevel { get { return _maxLevel; } }
+
     private const string LevelPrefix = "Level";
 
     private const float LevelLoadingTime = 2f;
@@ -12,22 +17,19 @@ public class GameManager : MonoBehaviour {
     private static GameManager _instance = null;
     public static GameManager Instance { get { return _instance; } }
 
-    [SerializeField]
     private UIController _uiController;
-
-    [SerializeField]
     private LevelSettings _levelSettings;
-
-    [Header("IMPORTANT: will eventually crash game if not correct")]
-    [SerializeField]
-    private int _maxLevel = 0;
-    public int MaxLevel { get { return _maxLevel; } }
+    private Player _player;
 
     private int _life;
 
     private int _currentLevel;
 
     private bool _isLoadingLevel = false;
+
+    private float[] _checkpoints;
+    private int _lastCheckpoint = -1;
+    private float _loadWithCheckpoint = -1f;
 
     private void Awake() {
         if(_instance == null) {
@@ -42,6 +44,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    //called whenever a level is loaded
     private void UpdateReferences() {
         //require some scripts and objects in scene
         _uiController = FindObjectOfType<UIController>();
@@ -53,18 +56,20 @@ public class GameManager : MonoBehaviour {
         if (_levelSettings == null) {
             throw new System.Exception("No LevelSettings in scene! ");
         }
+
+        _player = FindObjectOfType<Player>();
+        if (_player == null) {
+            throw new System.Exception("No Player in scene! ");
+        }
     }
 
     //called whenever a level is loaded
     private void InitializeLevel() {
         _life = _levelSettings.Life;
         _uiController.SetupUI(_levelSettings.Life);
+        _checkpoints = _levelSettings.Checkpoints;
 
-        if (FindObjectOfType<Player>()) {
-            FindObjectOfType<Player>().Activate();
-        } else {
-            throw new System.Exception("No Player in scene! ");
-        }
+        _player.Activate();
     }
 
     public void OnDamagePlayer(int damage) {
@@ -79,10 +84,17 @@ public class GameManager : MonoBehaviour {
         if(x > _levelSettings.LevelEndX) {
             Win();
         }
+        if(_checkpoints.Length > _lastCheckpoint + 1 && x > _checkpoints[_lastCheckpoint + 1]){
+            _lastCheckpoint++;
+        }
     }
 
     private void Die() {
         Debug.Log("Dieded");
+        if(_lastCheckpoint != -1) {
+            _loadWithCheckpoint = _checkpoints[_lastCheckpoint];
+        }
+        LoadLevel(_currentLevel);
     }
 
     private void Win() {
@@ -129,6 +141,12 @@ public class GameManager : MonoBehaviour {
 
         UpdateReferences();
 
+        _uiController.UpdateLevelTitle("Level " + scene);
+
+        if(_loadWithCheckpoint != -1) {
+            _player.transform.Translate(new Vector3(_loadWithCheckpoint, 0, 0));
+        }
+
         for (float i = LevelLoadingTime; i > 0; i -= .01f) {
             _uiController.UpdateGameReadyTime(i);
             yield return new WaitForSecondsRealtime(.01f);
@@ -136,8 +154,11 @@ public class GameManager : MonoBehaviour {
 
         InitializeLevel();
 
+        _lastCheckpoint = -1;
+        _loadWithCheckpoint = -1f;
+
         _isLoadingLevel = false;
-        _currentLevel++;
+        _currentLevel = scene;
         Debug.Log("Done loading " + LevelPrefix + scene);
         yield return null;
     }

@@ -20,6 +20,9 @@ public class UIController : MonoBehaviour {
     [SerializeField]
     private Text _gameReadyTextBox;
 
+    [SerializeField]
+    private Text _levelTitleTextBox;
+
     public void SetupUI(int maxLife) {
         //setup life display
         for(int i=0; i<maxLife; i++) {
@@ -44,6 +47,10 @@ public class UIController : MonoBehaviour {
 
     public void UpdateGameReadyTime(float time) {
         _gameReadyTextBox.text = time.ToString("F2");
+    }
+
+    public void UpdateLevelTitle(string title) {
+        _levelTitleTextBox.text = title;
     }
 
     public void ShowWinScreen() {
