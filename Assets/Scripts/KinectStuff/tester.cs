@@ -13,37 +13,42 @@ public class tester : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        GestureHandler.Instance.calcPositions();
-		GestureHandler.Instance.getRightHandState();
-		GestureHandler.Instance.getMappedRightHandPosition();
+      
+        if (GestureHandler.Instance.detectPlayer()) {
 
-        //Überprüfen, ob man die rechte Hand zuhält
-        if (GestureHandler.Instance.getRightHandState())
-        {
-            //Start Timer:
-            _timer += Time.deltaTime;
-            _timer2 += Time.deltaTime;
-			if(_timer2 >= 1)
-			{
-				Debug.Log(_timer);
-				_timer2--;
-			}
-            if (_timer >= interactionTimer)
+            GestureHandler.Instance.calcPositions();
+            //Debug.Log(GestureHandler.Instance.detectHeadTilt());
+            //GestureHandler.Instance.getRightHandState();
+            Debug.Log(GestureHandler.Instance.getMappedRightHandPosition());
+            //Überprüfen, ob man die rechte Hand zuhält
+            if (GestureHandler.Instance.getRightHandState())
             {
-                // Interaction complete:
-                _timer = 0;
-				_timer2 =0;
+                //Start Timer:
+                _timer += Time.deltaTime;
+                _timer2 += Time.deltaTime;
+                if (_timer2 >= 1)
+                {
+                    Debug.Log(_timer);
+                    _timer2--;
+                }
+                if (_timer >= interactionTimer)
+                {
+                    // Interaction complete:
+                    _timer = 0;
+                    _timer2 = 0;
+                }
             }
+            else
+            {
+                //Stopping Timer:
+                _timer = 0;
+                _timer2 = 0;
+               // Debug.Log("Rip");
+            }
+            //  GestureHandler.Instance.detectFlap();
+            //  GestureHandler.Instance.detectShoot();
         }
-        else
-        {
-            //Stopping Timer:
-            _timer = 0;
-			_timer2 = 0;
-			Debug.Log("Rip");
-        }
-      //  GestureHandler.Instance.detectFlap();
-	 //  GestureHandler.Instance.detectShoot();
-	
-	}
+
+
+    }
 }
