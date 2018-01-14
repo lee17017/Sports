@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour {
 
     [Header("Debug")]
-    private bool _isKinectEnabled = false;
+    private bool _isKinectEnabled = true;
 
     [Header("Movement")]
 
@@ -32,7 +32,7 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private float _borderRight = 0;
 
-
+    
     private float _currentForceY = 0;
     private float _lastFlapStamp = 0;
     private float _currentLeanSpeed;
@@ -40,10 +40,13 @@ public class Player : MonoBehaviour {
 
     private Collider _collider;
 
+    private Rigidbody _rig;
+
 	// Use this for initialization
 	void Start () {
+        Physics.gravity = new Vector3(0, -1f, 0);
+        _rig = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
-
         //if border is not set, try get the camera view and calculate
         //this is more of a fallback and should not be used necessarily
         if(_borderLeft == 0 && _borderRight == 0) {
@@ -75,6 +78,14 @@ public class Player : MonoBehaviour {
 	void Update () {
         float deltaX = 0, deltaY = 0;
         const float deltaZ = 0;
+        float y_vel = _rig.velocity.y;
+        if (y_vel < -5f)
+        { 
+            _rig.velocity = new Vector3(0, -1f, 0); 
+            Debug.Log("a"); 
+        }
+        else if (y_vel > 5f)
+        { _rig.velocity = new Vector3(0, 1f, 0); }
 
         deltaX += _autoMoveX * Time.deltaTime;
         deltaX += _currentLeanSpeed * Time.deltaTime;
@@ -83,17 +94,31 @@ public class Player : MonoBehaviour {
             //calculate flap force
             GestureHandler.Instance.calcPositions();
             float flap = GestureHandler.Instance.detectFlap();
-            bool shoot = GestureHandler.Instance.detectShoot();
 
-            _currentForceY += flap;
+            //For Keyboard Use:
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                flap = 0.35f;
+            }
+
+            bool shoot = GestureHandler.Instance.detectShoot();
+            if (flap != 0)
+            {
+                Debug.Log(flap);
+                if (y_vel < 0)
+                    _rig.velocity = new Vector3(0, y_vel / 2f, 0);
+                _rig.AddForce(new Vector3(0, flap*_lift, 0));
+            }
+            _currentForceY += flap*_lift;
         } else {
             _currentForceY += GetFlapForce(Time.realtimeSinceStartup - _lastFlapStamp);
-            _currentForceY -= GetGravity(Time.realtimeSinceStartup - _lastFlapStamp);
         }
+        _currentForceY -= 2f*Time.deltaTime;
+        deltaY = _currentForceY;
 
         //apply translation
-        gameObject.transform.Translate(new Vector3(deltaX, deltaY, deltaZ));
-
+        gameObject.transform.Translate(new Vector3(deltaX, 0, 0));
+        
         //keep player in bounds
         _currentPositionInBorder += _currentLeanSpeed * Time.deltaTime;
         
@@ -104,7 +129,7 @@ public class Player : MonoBehaviour {
             transform.Translate(-(_currentPositionInBorder - _borderRight), 0, 0);
             _currentPositionInBorder = _borderRight;
         }
-
+        
         //update position in game manager
         GameManager.Instance.UpdatePlayerPosition(transform.position.x);
     }
