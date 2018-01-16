@@ -106,7 +106,7 @@ public class GestureHandler : MonoBehaviour {
 
     }
 
-    public int detectHeadTilt()
+    public int detectLean()
     {
         if (_headRotY < 90-_headDetY)
             return -1;

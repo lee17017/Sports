@@ -121,11 +121,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7f916a8cfdb8274694279e63c43402b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isKinectEnabled: 0
-  _liftConstant: 100
+  _isKinectEnabled: 1
+  _liftConstant: 150
   _gravityConstant: 1
   _autoMoveX: 1
-  _leanSpeed: 1
+  _leanSpeed: 3
   _invincibleTime: 0
   _borderLeft: 0
   _borderRight: 0

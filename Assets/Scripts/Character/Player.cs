@@ -130,6 +130,7 @@ public class Player : MonoBehaviour {
             x_vel += _autoMoveX * Time.deltaTime;
 
             //leaning
+            OnLean(GestureHandler.Instance.detectLean());
             x_vel += _currentLeanSpeed * Time.deltaTime;
 
 
