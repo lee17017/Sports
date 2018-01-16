@@ -42,7 +42,11 @@ public class UIController : MonoBehaviour {
     }
 
     public void UpdateLife(int life) {
-        Destroy(_lifePanel.GetChild(_lifePanel.childCount - 1));
+        int diff = _lifePanel.childCount - life;
+        for (int i = 0; i < diff; i++)
+        {
+            Destroy(_lifePanel.GetChild(0).gameObject);
+        }
     }
 
     public void UpdateGameReadyTime(float time) {

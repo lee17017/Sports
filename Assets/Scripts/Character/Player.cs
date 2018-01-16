@@ -81,11 +81,14 @@ public class Player : MonoBehaviour {
     }
 
     public void Damage(int damage) {
+        /*
         if(_invincibleTimestamp != 0 && Time.time - _invincibleTimestamp > _invincibleTime) {
             GameManager.Instance.OnDamagePlayer(damage);
             _invincibleTimestamp = Time.time;
             StartCoroutine(InvincibleFlash());
         }
+         * */
+        GameManager.Instance.OnDamagePlayer(damage);
     }
 
     private IEnumerator InvincibleFlash() {
@@ -125,12 +128,6 @@ public class Player : MonoBehaviour {
             //    Debug.Log("a");
             //} else if (y_vel > 5f) { _rig.velocity = new Vector3(0, 1f, 0); }
             
-
-            //calculate x velocity from time and fixed auto speed
-            x_vel += _autoMoveX * Time.deltaTime;
-
-            //leaning
-            x_vel += _currentLeanSpeed * Time.deltaTime;
 
 
             if (_isKinectEnabled) {
@@ -175,6 +172,12 @@ public class Player : MonoBehaviour {
                     OnLean(0f);
                 }
             }
+
+                        //calculate x velocity from time and fixed auto speed
+            x_vel += _autoMoveX * Time.deltaTime;
+
+            //leaning
+            x_vel += _currentLeanSpeed * Time.deltaTime;
 
             //apply translation for constant speed in +x direction (right)
             gameObject.transform.Translate(new Vector3(x_vel, 0, 0));

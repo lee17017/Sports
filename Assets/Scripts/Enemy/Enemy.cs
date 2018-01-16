@@ -114,18 +114,18 @@ public class Enemy : MonoBehaviour
             _movementSpeed *= 1.5f;
         }
          */
-        else if (collision.gameObject.tag == "CameraBox")
+        else if (collision.gameObject.tag == "CameraBox" && !_isActive)
         {
-            if (_isActive)
-            {
-                _isActive = false;
-                StartCoroutine(TimeToDie());
-            }
-            else
-            {
-                InitialiseEnemy();
-                _isActive = true;
-            }
+            InitialiseEnemy();
+            _isActive = true;
+        }
+    }
+    void OnTriggerExit(Collider collision)
+    {
+        if (_isActive & collision.gameObject.tag == "CameraBox")
+        {
+            _isActive = false;
+            StartCoroutine(TimeToDie());
         }
     }
 
@@ -249,7 +249,9 @@ public class Enemy : MonoBehaviour
         _canShoot = false;
         yield return new WaitForSeconds(cd);
         _canShoot = true;
-        Shoot();
+        if (_isActive) { 
+            Shoot(); 
+        }
     }
     #endregion
 

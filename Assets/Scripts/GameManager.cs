@@ -133,8 +133,8 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator LoadSceneAsync(int scene) {
         Debug.Log("Starting to load " + LevelPrefix + scene);
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(LevelPrefix + scene);
-
+        //AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(LevelPrefix + scene);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene);
         while (!asyncLoad.isDone) {
             yield return null;
         }

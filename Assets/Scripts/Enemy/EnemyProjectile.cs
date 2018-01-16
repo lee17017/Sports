@@ -45,12 +45,15 @@ public class EnemyProjectile : MonoBehaviour
             collision.GetComponent<Player>().Damage(1);
             Destroy(this.gameObject);
         }
-        else if (collision.gameObject.tag == "CameraBox")
+    }
+
+    void OnTriggerExit(Collider collision)
+    {
+        if (collision.gameObject.tag == "CameraBox")
         {
             StartCoroutine(WaitBeforeDie());
         }
     }
-
     /*
     void OnBecameInvisible()
     {
