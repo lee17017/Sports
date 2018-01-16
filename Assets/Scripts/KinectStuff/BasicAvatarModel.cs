@@ -16,5 +16,6 @@ public abstract class BasicAvatarModel : MonoBehaviour
 
     public abstract ulong getTrackingID();
 
+    public abstract bool detectPlayer();
     public abstract HandState getRightHandState();
 }

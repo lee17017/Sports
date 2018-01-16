@@ -21,6 +21,10 @@ public class GestureHandler : MonoBehaviour {
     private Vector3 _handLeftRel;
     private float _handDetZ = 0.3f;
 
+    private float _screenXDim = Screen.width;
+    private float _screenYDim = Screen.height;
+    
+
     //rotational informations
     //private float _shoulderRightRotZ, _shoulderLeftRotZ;
     private float _shoulderRightRotY, _shoulderLeftRotY;
@@ -34,6 +38,10 @@ public class GestureHandler : MonoBehaviour {
     private shootState _curShootState = shootState.NORM;
     private float _shootDetZ = 0.5f;
     private float _shootBackDetZ = 0.3f;
+
+    //head Tilt Variables:
+    private float _headRotY;
+    private float _headDetY = 15 ;
 
     //testVariables:
     private float flapCnt = 0;
@@ -55,7 +63,9 @@ public class GestureHandler : MonoBehaviour {
         }
     }
 
-
+    public bool detectPlayer() {
+        return _moCapAvatar.detectPlayer();
+    }
 
 
     public bool getRightHandState() //returns true if right Hand is closed
@@ -78,6 +88,32 @@ public class GestureHandler : MonoBehaviour {
 
         _shoulderLeftRotY = Mathf.Asin(_handLeftRel.y / _handRightRel.magnitude) * 180 / Mathf.PI + _rotYOffset;
         //_shoulderLeftRotZ = Mathf.Asin(_handLeftRel.z / _handRightRel.magnitude) * 180 / Mathf.PI + _rotYOffset;
+
+        Vector3 headBase = _moCapAvatar.getRawWorldPosition(JointType.SpineMid);
+        Vector3 head = _moCapAvatar.getRawWorldPosition(JointType.Head);
+        Vector3 headDir = head - headBase;
+        _headRotY = Mathf.Asin(headDir.y/headDir.magnitude)*180/Mathf.PI;
+        if (headDir.x > 0)
+            _headRotY = 180 - _headRotY;
+    }
+    public Vector2 getMappedRightHandPosition()
+    {
+        Vector2 result;
+        
+        result.x = (_handRightRel.x - 0.1f)/0.6f;
+        result.y = (_handRightRel.y + 0.2f)/0.4f;
+        return result;
+
+    }
+
+    public int detectHeadTilt()
+    {
+        if (_headRotY < 90-_headDetY)
+            return -1;
+        else if (_headRotY < 90+_headDetY)
+            return 0;
+        else
+            return 1;
     }
 
     public bool detectShoot() //returns true when shoot gesture is detected
