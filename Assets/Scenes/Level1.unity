@@ -205,6 +205,10 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1243929682952620, guid: 9dd1dd9231f2b92429537777ac3121fa, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9dd1dd9231f2b92429537777ac3121fa, type: 2}
   m_IsPrefabParent: 0
@@ -250,6 +254,31 @@ Prefab:
     - target: {fileID: 114488282040461362, guid: 2d241eb5a24b5564b9c578eb0ace0e26,
         type: 2}
       propertyPath: _flapTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114488282040461362, guid: 2d241eb5a24b5564b9c578eb0ace0e26,
+        type: 2}
+      propertyPath: _isKinectEnabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114488282040461362, guid: 2d241eb5a24b5564b9c578eb0ace0e26,
+        type: 2}
+      propertyPath: _liftConstant
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114488282040461362, guid: 2d241eb5a24b5564b9c578eb0ace0e26,
+        type: 2}
+      propertyPath: _gravityConstant
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114488282040461362, guid: 2d241eb5a24b5564b9c578eb0ace0e26,
+        type: 2}
+      propertyPath: _borderLeft
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114488282040461362, guid: 2d241eb5a24b5564b9c578eb0ace0e26,
+        type: 2}
+      propertyPath: _borderRight
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -422,6 +451,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114713279407074836, guid: cecc630200bdae44481166515a1fa1c5,
+        type: 2}
+      propertyPath: _checkpoints.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4911967167749272, guid: cecc630200bdae44481166515a1fa1c5, type: 2}
       propertyPath: m_LocalPosition.x
       value: 324.65375
@@ -463,6 +497,16 @@ Prefab:
         type: 2}
       propertyPath: _levelEndX
       value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 114713279407074836, guid: cecc630200bdae44481166515a1fa1c5,
+        type: 2}
+      propertyPath: _checkpoints.Array.data[0]
+      value: 26.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 114713279407074836, guid: cecc630200bdae44481166515a1fa1c5,
+        type: 2}
+      propertyPath: _checkpoints.Array.data[1]
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cecc630200bdae44481166515a1fa1c5, type: 2}

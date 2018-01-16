@@ -14,6 +14,15 @@ public class UIController : MonoBehaviour {
     [SerializeField]
     private GameObject _loadingScreen;
 
+    [SerializeField]
+    private GameObject _winScreen;
+
+    [SerializeField]
+    private Text _gameReadyTextBox;
+
+    [SerializeField]
+    private Text _levelTitleTextBox;
+
     public void SetupUI(int maxLife) {
         //setup life display
         for(int i=0; i<maxLife; i++) {
@@ -21,6 +30,7 @@ public class UIController : MonoBehaviour {
             tmp.transform.SetParent(_lifePanel, false);
         }
         _loadingScreen.SetActive(false);
+        _winScreen.SetActive(false);
     }
 
     public void ActivateLoadingScreen() {
@@ -32,7 +42,19 @@ public class UIController : MonoBehaviour {
     }
 
     public void UpdateLife(int life) {
+        Destroy(_lifePanel.GetChild(_lifePanel.childCount - 1));
+    }
 
+    public void UpdateGameReadyTime(float time) {
+        _gameReadyTextBox.text = time.ToString("F2");
+    }
+
+    public void UpdateLevelTitle(string title) {
+        _levelTitleTextBox.text = title;
+    }
+
+    public void ShowWinScreen() {
+        _winScreen.SetActive(true);
     }
 
 }
