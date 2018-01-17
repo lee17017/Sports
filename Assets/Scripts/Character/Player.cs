@@ -182,7 +182,7 @@ public class Player : MonoBehaviour {
             gameObject.transform.Translate(new Vector3(x_vel, 0, 0));
 
             //keep player in bounds with leaning active
-            _currentPositionInBorder += _currentLeanSpeed * Time.deltaTime;
+            _currentPositionInBorder += GestureHandler.Instance.detectLean()*_currentLeanSpeed * Time.deltaTime;
 
             if (_currentPositionInBorder < _borderLeft) {
                 transform.Translate((_borderLeft - _currentPositionInBorder), 0, 0);
