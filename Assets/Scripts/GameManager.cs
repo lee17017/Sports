@@ -70,6 +70,14 @@ public class GameManager : MonoBehaviour {
         _checkpoints = _levelSettings.Checkpoints;
 
         _player.Activate();
+
+        //From Hendrik:
+        //Activating the CameraBox on Camera
+        Camera cam = Camera.main;
+        for (int i = 0; i < cam.transform.childCount; i++)
+        {
+            cam.transform.GetChild(i).gameObject.GetComponent<SphereCollider>().enabled = true;
+        }
     }
 
     public void OnDamagePlayer(int damage) {
@@ -163,4 +171,29 @@ public class GameManager : MonoBehaviour {
         yield return null;
     }
 
+    // From Hendrik: Developer TOols for Keyboard (for cheating and such)
+    private void LateUpdate()
+    {
+        for (int i = 0; i < numKeys.Length; i++)
+        {
+            if (Input.GetKeyDown(numKeys[i]))
+            {
+                int numberPressed = i;
+                LoadLevel(numberPressed);
+                break;
+            }
+        }
+    }
+    private KeyCode[] numKeys = {
+         KeyCode.Alpha1,
+         KeyCode.Alpha2,
+         KeyCode.Alpha3,
+         KeyCode.Alpha4,
+         KeyCode.Alpha5,
+         KeyCode.Alpha6,
+         KeyCode.Alpha7,
+         KeyCode.Alpha8,
+         KeyCode.Alpha9,
+         KeyCode.Alpha0,
+     };
 }
