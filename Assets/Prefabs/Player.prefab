@@ -126,10 +126,8 @@ MonoBehaviour:
   _gravityConstant: 2
   _autoMoveX: 1
   _leanSpeed: 3
-  _speedBumper: 3
-  _screenFlapPosY: 2
+  _ySpeedLimit: 3
   _invincibleTime: 1
-  _ySpeed: 0
   _borderLeft: -1.81
   _borderRight: 7
   _projectilePrefab: {fileID: 1464808774373196, guid: 518218b141d50e8408524a315396239f,

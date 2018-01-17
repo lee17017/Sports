@@ -879,7 +879,7 @@ Prefab:
     - target: {fileID: 114611212001982448, guid: c632d5a2ec0ca9b47b123088374bdc8f,
         type: 2}
       propertyPath: holdTime
-      value: 2
+      value: 0.8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c632d5a2ec0ca9b47b123088374bdc8f, type: 2}

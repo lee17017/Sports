@@ -42,6 +42,7 @@ public class Player : MonoBehaviour {
     private GameObject _projectilePrefab;
 
     private float _currentLeanSpeed;
+
     private float _currentPositionInBorder = 0;
 
     private Collider _collider;
@@ -149,6 +150,7 @@ public class Player : MonoBehaviour {
                 if (shoot) {
                     Shoot();
                 }
+                OnLean(GestureHandler.Instance.detectLean());
             }
             //for testing
             else {
@@ -182,7 +184,7 @@ public class Player : MonoBehaviour {
             gameObject.transform.Translate(new Vector3(x_vel, 0, 0));
 
             //keep player in bounds with leaning active
-            _currentPositionInBorder += GestureHandler.Instance.detectLean()*_currentLeanSpeed * Time.deltaTime;
+            _currentPositionInBorder += _currentLeanSpeed * Time.deltaTime;
 
             if (_currentPositionInBorder < _borderLeft) {
                 transform.Translate((_borderLeft - _currentPositionInBorder), 0, 0);
