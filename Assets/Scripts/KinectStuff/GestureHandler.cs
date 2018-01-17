@@ -121,7 +121,7 @@ public class GestureHandler : MonoBehaviour {
         switch (_curShootState)
         {
             case shootState.NORM:
-                if(_handRightRel.z > _shootDetZ || _handLeftRel.z > _shootDetZ)
+                if(_handRightRel.z > _shootDetZ && _handLeftRel.z > _shootDetZ)
                 //if ((handRightRel.z > shootDetZ && handLeftRel.z < shootDetZ) || (handRightRel.z < shootDetZ && handLeftRel.z > shootDetZ))
                 {
                     _curShootState = shootState.SHOOT;

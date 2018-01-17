@@ -14,8 +14,6 @@ public class Player : MonoBehaviour {
     private float _liftConstant;
 
 
-    private float _gravity;
-
     [SerializeField]
     private float _gravityConstant = 2;
 
@@ -27,18 +25,11 @@ public class Player : MonoBehaviour {
     private float _leanSpeed = 1;
 
     [SerializeField]
-    private float _speedBumper;
-
-    [SerializeField]
-    private float _screenFlapPosY;
-
-
+    private float _ySpeedLimit;
+	
     [Header("Gameplay")]
     [SerializeField]
     private float _invincibleTime;
-
-    [SerializeField]
-    private float _ySpeed;
 
     [Header("Level Border"), Tooltip("Left and right border as distance to player")]
     [SerializeField]
@@ -61,7 +52,6 @@ public class Player : MonoBehaviour {
     private bool _isActive = false;
     public bool IsActive { get { return _isActive; } }
 
-    private float _screenYPosBorder;
 	// Use this for initialization
 	void Start () {
         //initialize gravity vector in -y direction
@@ -70,8 +60,6 @@ public class Player : MonoBehaviour {
         _collider = GetComponent<Collider>();
 
         _rig.useGravity = false;
-        _screenYPosBorder = Camera.main.ViewportToWorldPoint(new Vector3(0, 0.8f, 1)).y;
-        Debug.Log(_screenYPosBorder);
         //if border is not set, try get the camera view and calculate
         //this is more of a fallback and should not be used necessarily
         if (_borderLeft == 0 && _borderRight == 0) {
@@ -136,18 +124,10 @@ public class Player : MonoBehaviour {
             //get y velocity from rigidbody
             float y_vel = _rig.velocity.y;
 
-            if (y_vel > _speedBumper)
-                Physics.gravity = new Vector3(0, -_gravityConstant*4, 0);
+            if (y_vel > _ySpeedLimit)
+                Physics.gravity = new Vector3(0, -4*_gravityConstant, 0);
             else
                 Physics.gravity = new Vector3(0, -_gravityConstant, 0);
-            //y velocity border cases
-
-            //if (y_vel < -5f) {
-            //    _rig.velocity = new Vector3(0, -1f, 0);
-            //    Debug.Log("a");
-            //} else if (y_vel > 5f) { _rig.velocity = new Vector3(0, 1f, 0); }
-
-
 
             if (_isKinectEnabled) {
                 //calculate flap force
@@ -157,17 +137,14 @@ public class Player : MonoBehaviour {
                 bool shoot = GestureHandler.Instance.detectShoot();
 
                 if (flap > 0) {
-                    Debug.Log("Flap detected with force: " + flap + "  ,normalized from 0 to 1");
+                    //Debug.Log("Flap detected with force: " + flap + "  ,normalized from 0 to 1");
                     //if character is falling down reduce gravity on flap
                     //so it is a lot easier to recover from falling
                     if (y_vel < 0) {
                         _rig.velocity = new Vector3(0, y_vel / 2f, 0);
                     }
                     //add force
-                    if(transform.position.y < _screenYPosBorder)
                         _rig.AddForce(new Vector3(0, GetFlapForce(flap), 0));
-                    else
-                        _rig.AddForce(new Vector3(0, GetFlapForce(flap/2), 0));
                 }
                 if (shoot) {
                     Shoot();
@@ -215,9 +192,6 @@ public class Player : MonoBehaviour {
                 _currentPositionInBorder = _borderRight;
             }
 
-            _ySpeed =_rig.velocity.y;
-
-            Debug.LogWarning(_rig.velocity.y);
             //update position in game manager in order to detect if the player finished the level
             GameManager.Instance.UpdatePlayerPosition(transform.position.x);
         }
