@@ -163,7 +163,7 @@ public class GestureHandler : MonoBehaviour {
                 if (_shoulderRightRotY > _detRotUpY && _shoulderLeftRotY > _detRotUpY)
                     _curHandState = handState.UP;
                 else if (_shoulderRightRotY < _detRotDownY && _shoulderLeftRotY < _detRotDownY) {
-                    Debug.Log("Flap: " + _maxRotY);
+                    //Debug.Log("Flap: " + _maxRotY);
                     _curHandState = handState.DOWN;
                     float temp = _maxRotY;
                     _maxRotY = 0;

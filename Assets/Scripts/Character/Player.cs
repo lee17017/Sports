@@ -13,8 +13,11 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private float _liftConstant;
 
+
+    private float _gravity;
+
     [SerializeField]
-    private float _gravityConstant = 1;
+    private float _gravityConstant = 2;
 
     [SerializeField]
     private float _autoMoveX = 0;
@@ -23,9 +26,19 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private float _leanSpeed = 1;
 
+    [SerializeField]
+    private float _speedBumper;
+
+    [SerializeField]
+    private float _screenFlapPosY;
+
+
     [Header("Gameplay")]
     [SerializeField]
     private float _invincibleTime;
+
+    [SerializeField]
+    private float _ySpeed;
 
     [Header("Level Border"), Tooltip("Left and right border as distance to player")]
     [SerializeField]
@@ -48,6 +61,7 @@ public class Player : MonoBehaviour {
     private bool _isActive = false;
     public bool IsActive { get { return _isActive; } }
 
+    private float _screenYPosBorder;
 	// Use this for initialization
 	void Start () {
         //initialize gravity vector in -y direction
@@ -56,10 +70,11 @@ public class Player : MonoBehaviour {
         _collider = GetComponent<Collider>();
 
         _rig.useGravity = false;
-
+        _screenYPosBorder = Camera.main.ViewportToWorldPoint(new Vector3(0, 0.8f, 1)).y;
+        Debug.Log(_screenYPosBorder);
         //if border is not set, try get the camera view and calculate
         //this is more of a fallback and should not be used necessarily
-        if(_borderLeft == 0 && _borderRight == 0) {
+        if (_borderLeft == 0 && _borderRight == 0) {
             float distance = Camera.main.transform.position.z;
             // the - is needed because the camera is looking along +z axis and not -z
             _borderLeft = -(Camera.main.ViewportToWorldPoint(new Vector3(0, 0, distance)).x
@@ -121,13 +136,17 @@ public class Player : MonoBehaviour {
             //get y velocity from rigidbody
             float y_vel = _rig.velocity.y;
 
+            if (y_vel > _speedBumper)
+                Physics.gravity = new Vector3(0, -_gravityConstant*4, 0);
+            else
+                Physics.gravity = new Vector3(0, -_gravityConstant, 0);
             //y velocity border cases
-            
+
             //if (y_vel < -5f) {
             //    _rig.velocity = new Vector3(0, -1f, 0);
             //    Debug.Log("a");
             //} else if (y_vel > 5f) { _rig.velocity = new Vector3(0, 1f, 0); }
-            
+
 
 
             if (_isKinectEnabled) {
@@ -145,7 +164,10 @@ public class Player : MonoBehaviour {
                         _rig.velocity = new Vector3(0, y_vel / 2f, 0);
                     }
                     //add force
-                    _rig.AddForce(new Vector3(0, GetFlapForce(flap), 0));
+                    if(transform.position.y < _screenYPosBorder)
+                        _rig.AddForce(new Vector3(0, GetFlapForce(flap), 0));
+                    else
+                        _rig.AddForce(new Vector3(0, GetFlapForce(flap/2), 0));
                 }
                 if (shoot) {
                     Shoot();
@@ -193,6 +215,9 @@ public class Player : MonoBehaviour {
                 _currentPositionInBorder = _borderRight;
             }
 
+            _ySpeed =_rig.velocity.y;
+
+            Debug.LogWarning(_rig.velocity.y);
             //update position in game manager in order to detect if the player finished the level
             GameManager.Instance.UpdatePlayerPosition(transform.position.x);
         }

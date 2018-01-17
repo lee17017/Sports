@@ -9,7 +9,8 @@ public class Pointer : MonoBehaviour {
     private Camera _camera;
     private Renderer _rend;
     public Color normColor, activeColor;
-
+    public float holdTime;
+    private float curTimer;
 	void Start () {
         _camera = GameObject.Find("Main Camera").GetComponent<Camera>();
         _rend = GetComponent<Renderer>();
@@ -26,11 +27,12 @@ public class Pointer : MonoBehaviour {
             if (GestureHandler.Instance.getRightHandState())
             {
                 _rend.material.color = normColor;
+                RaycastUIObjects();
             }
             else
             {
                 _rend.material.color = activeColor;
-
+                curTimer = 0;
             }
 
         }
@@ -47,18 +49,24 @@ public class Pointer : MonoBehaviour {
         pointer.position = Camera.main.WorldToScreenPoint(transform.position);
         var raycastResults = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pointer, raycastResults);
+        if (raycastResults.Count > 1)
+            Debug.LogWarning("More than one target hit by raycast");
         foreach (RaycastResult result in raycastResults)
         {
-            Debug.Log("Hit2 " + raycastResults.Count + result.gameObject.name);
+            //Debug.Log("Hit " + raycastResults.Count + result.gameObject.name);
 
-            /*
+            
             Button b = result.gameObject.GetComponent<Button>();
             if (b != null)
             {
-                b.onClick.Invoke();
+                curTimer += Time.deltaTime;
+                if (curTimer > holdTime) {
+                    b.onClick.Invoke();
+                }
             }
-             * */
         }
+        if (raycastResults.Count == 0)
+            curTimer = 0;
     }
 
 }
