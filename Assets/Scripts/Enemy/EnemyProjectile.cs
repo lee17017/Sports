@@ -7,13 +7,16 @@ public class EnemyProjectile : MonoBehaviour
 
     public Vector3 direction;
     public float movementSpeed;
+	public int damage;
 
     public static float _timeToLive = 4f; //Sekunden anzahl, bevor das Projektil verschwindet
 
     // Use this for initialization
     void Start()
     {
-
+		if (damage == 0) {
+			damage = 1;
+		}
     }
 
     // Update is called once per frame
@@ -42,7 +45,7 @@ public class EnemyProjectile : MonoBehaviour
         //Wenn er mit dem Spieler kollidiert, kassiert dieser ein Schaden und der Gegner stirbt
         if (collision.gameObject.tag == "Player")
         {
-            collision.GetComponent<Player>().Damage(1);
+			collision.GetComponent<Player>().Damage(this.damage);
             Destroy(this.gameObject);
         }
     }
