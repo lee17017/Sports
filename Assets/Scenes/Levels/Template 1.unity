@@ -213,7 +213,7 @@ Prefab:
     - target: {fileID: 114488282040461362, guid: 2d241eb5a24b5564b9c578eb0ace0e26,
         type: 2}
       propertyPath: _isKinectEnabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2d241eb5a24b5564b9c578eb0ace0e26, type: 2}
@@ -293,8 +293,54 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
+<<<<<<< HEAD:Assets/Scenes/DemoLevel.unity
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1017931692
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1017931694}
+  - component: {fileID: 1017931693}
+  m_Layer: 0
+  m_Name: Input
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1017931693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1017931692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58ebed43627a9e247bc7492591815174, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _player: {fileID: 217727645}
+--- !u!4 &1017931694
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1017931692}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -4.54, y: 1.66, z: 1.9042969}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1165972784}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+=======
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+>>>>>>> remotes/origin/lvlBuild:Assets/Scenes/Levels/Template 1.unity
 --- !u!1001 &1065254040
 Prefab:
   m_ObjectHideFlags: 0
@@ -332,7 +378,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4415216808539328, guid: 4a2174348988a0746a17a58cbab56c14, type: 2}
       propertyPath: m_RootOrder
+<<<<<<< HEAD:Assets/Scenes/DemoLevel.unity
+      value: 6
+=======
       value: 5
+>>>>>>> remotes/origin/lvlBuild:Assets/Scenes/Levels/Template 1.unity
       objectReference: {fileID: 0}
     - target: {fileID: 114592960152156444, guid: 4a2174348988a0746a17a58cbab56c14,
         type: 2}
@@ -384,7 +434,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4911967167749272, guid: cecc630200bdae44481166515a1fa1c5, type: 2}
       propertyPath: m_RootOrder
+<<<<<<< HEAD:Assets/Scenes/DemoLevel.unity
+      value: 7
+=======
       value: 6
+>>>>>>> remotes/origin/lvlBuild:Assets/Scenes/Levels/Template 1.unity
       objectReference: {fileID: 0}
     - target: {fileID: 114713279407074836, guid: cecc630200bdae44481166515a1fa1c5,
         type: 2}
@@ -539,9 +593,14 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1017931694}
   m_Father: {fileID: 0}
+<<<<<<< HEAD:Assets/Scenes/DemoLevel.unity
+  m_RootOrder: 5
+=======
   m_RootOrder: 7
+>>>>>>> remotes/origin/lvlBuild:Assets/Scenes/Levels/Template 1.unity
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1319069184
 Prefab:
@@ -630,7 +689,11 @@ Prefab:
     - target: {fileID: 224710457784451630, guid: 9dd1dd9231f2b92429537777ac3121fa,
         type: 2}
       propertyPath: m_RootOrder
+<<<<<<< HEAD:Assets/Scenes/DemoLevel.unity
+      value: 4
+=======
       value: 3
+>>>>>>> remotes/origin/lvlBuild:Assets/Scenes/Levels/Template 1.unity
       objectReference: {fileID: 0}
     - target: {fileID: 224710457784451630, guid: 9dd1dd9231f2b92429537777ac3121fa,
         type: 2}
@@ -722,7 +785,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 456468, guid: 53cb26e681012e14ca81bfb22cb6235c, type: 2}
       propertyPath: m_RootOrder
+<<<<<<< HEAD:Assets/Scenes/DemoLevel.unity
+      value: 8
+=======
       value: 7
+>>>>>>> remotes/origin/lvlBuild:Assets/Scenes/Levels/Template 1.unity
       objectReference: {fileID: 0}
     - target: {fileID: 166474, guid: 53cb26e681012e14ca81bfb22cb6235c, type: 2}
       propertyPath: m_IsActive

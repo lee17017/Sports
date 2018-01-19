@@ -38,7 +38,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1469982737599748}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -57,7 +57,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 1a98d41eb00face498310839275a7401, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -121,14 +121,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7f916a8cfdb8274694279e63c43402b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   _isKinectEnabled: 1
   _liftConstant: 400
   _gravityConstant: 2
+=======
+  _isKinectEnabled: 0
+  _liftConstant: 150
+  _gravityConstant: 1
+>>>>>>> remotes/origin/lvlBuild
   _autoMoveX: 1
   _leanSpeed: 3
   _ySpeedLimit: 3
   _invincibleTime: 1
   _borderLeft: -1.81
-  _borderRight: 7
+  _borderRight: 15
   _projectilePrefab: {fileID: 1464808774373196, guid: 518218b141d50e8408524a315396239f,
     type: 2}
