@@ -121,15 +121,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7f916a8cfdb8274694279e63c43402b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-<<<<<<< HEAD
-  _isKinectEnabled: 1
+  _isKinectEnabled: 0
   _liftConstant: 400
   _gravityConstant: 2
-=======
-  _isKinectEnabled: 0
-  _liftConstant: 150
-  _gravityConstant: 1
->>>>>>> remotes/origin/lvlBuild
   _autoMoveX: 1
   _leanSpeed: 3
   _ySpeedLimit: 3
