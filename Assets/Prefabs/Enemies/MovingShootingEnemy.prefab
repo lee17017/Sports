@@ -172,6 +172,7 @@ MonoBehaviour:
   _updateBeaconPeriod: 0
   _beacon: {fileID: 1066306897627548}
   _canShoot: 1
+  _gunOffsetFactor: 0.95
   _gunMinCD: 3
   _gunMaxCD: 5
   _gunStartCD: 1

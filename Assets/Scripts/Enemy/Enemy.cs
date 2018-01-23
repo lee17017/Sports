@@ -6,8 +6,11 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
+    private static bool _collisionHack = false;
+
     [SerializeField]
     private int _health; //Wieviele Leben der Gegner hat
+    // Wenn -1, ist der Gegner unverwundbar und kann im Moment NIE sterben.
 
     [SerializeField]
     private float _timeToLive; //Sagt aus, wielange dieser Gegner aktiv überleben kann (0 = Infinity)
@@ -39,6 +42,8 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private bool _canShoot; // Einstellungen für schießen (<- false == kann nicht schießen)
     #region shootingSettings
+    [SerializeField]
+    private float _gunOffsetFactor;
     [SerializeField]
     private float _gunMinCD; //Kleinster Cooldown zwischen Schüssen
     [SerializeField]
@@ -94,10 +99,10 @@ public class Enemy : MonoBehaviour
         {
             Move();
         }
-        //if (_canShoot)
-        //{
-        //    Shoot();
-        //}
+        if (_canShoot && _isActive)
+        {
+            Shoot();
+        }
     }
 
     void InitialiseEnemy()
@@ -119,23 +124,27 @@ public class Enemy : MonoBehaviour
             _player.GetComponent<Player>().Damage(this._collisionDamage);
             Die();
         }
-        // Beim Aufprall eines Spieler-projektils verlieren sie per se 1 Leben.
-        //else if (collision.gameObject.tag == "PlayerProjectile")
-        //{
-        //    LooseHealth(1);
-        //}
-        // Kollision mit Gegn. Projektil auch 1 Schaden, aber ihre Bewegungsgeschwindigkeit erhöht sich.
-        /*
+        // Kollision mit Gegn. Projektil erhöht ihre Bewegungsgeschwindigkeit
         else if (collision.gameObject.tag == "EnemyProjectile")
         {
-            LooseHealth(1);
-            _movementSpeed *= 1.5f;
+            //LooseHealth(1);
+            //_movementSpeed += 0.4f;
+            Destroy(collision.gameObject);
         }
-         */
+        // Aktivierung der Gegner:
         else if (collision.gameObject.tag == "CameraBox" && !_isActive)
         {
             InitialiseEnemy();
             _isActive = true;
+        }
+        // Kollision mit Gegner stoppt diesen hier kurzzeitig:
+        else if (collision.gameObject.tag == "Enemy")
+        {
+            _collisionHack = !_collisionHack;
+            if (_collisionHack)
+            {
+                StartCoroutine(CollisionDelay());
+            }
         }
     }
     void OnTriggerExit(Collider collision)
@@ -150,10 +159,13 @@ public class Enemy : MonoBehaviour
     // Leben verlieren
     public void LooseHealth(int damage)
     {
-        _health -= damage;
-        if (_health <= 0)
+        if (_health != -1)
         {
-            Die();
+            _health -= damage;
+            if (_health <= 0)
+            {
+                Die();
+            }
         }
     }
 
@@ -244,9 +256,13 @@ public class Enemy : MonoBehaviour
             //float curAccY = Random.Range(1 - (1 - _accuracy), 1 + (1 - _accuracy));
             //shootDirection.y *= curAccY;
             shootDirection = new Vector3(shootDirection.x * curAccX, shootDirection.y, 0);
-
             shootDirection = shootDirection.normalized;
-            GameObject projc = Instantiate(_enemyProjectile, this.transform.position, Quaternion.identity);
+
+            // Start Position bestimmen:
+            Vector3 startPosition = this.transform.position + _gunOffsetFactor * shootDirection;
+
+            GameObject projc = Instantiate(_enemyProjectile, startPosition, Quaternion.identity);
+
             projc.GetComponent<EnemyProjectile>().movementSpeed = _projectileSpeed;
             if (_projectileSpeed == 0)
             {
@@ -266,10 +282,10 @@ public class Enemy : MonoBehaviour
         _canShoot = false;
         yield return new WaitForSeconds(cd);
         _canShoot = true;
-        if (_isActive)
-        {
-            Shoot();
-        }
+        //if (_isActive)
+        //{
+        //    Shoot();
+        //}
     }
     #endregion
 
@@ -278,5 +294,12 @@ public class Enemy : MonoBehaviour
     {
         // wenn der gegner min. 1 x koordinate weiter links ist.
         return (this.transform.position.x + 1 < _player.transform.position.x);
+    }
+
+    IEnumerator CollisionDelay()
+    {
+        _isActive = false;
+        yield return new WaitForSeconds(1f);
+        _isActive = true;
     }
 }

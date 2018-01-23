@@ -10,9 +10,10 @@ public class GestureHandler : MonoBehaviour {
     public static GestureHandler Instance { get { return _instance; } }
  
     private BasicAvatarModel _moCapAvatar;
-   
+
+    public bool isKinectEnabled;
     //flap Gestic Variables:
-    public enum handState {MID, UP, MIDtoDOWN, DOWN, MIDtoUP }; //maybe rename enum 
+    public enum handState {MID, UP, DOWN};
     private handState _curHandState = handState.MID;
 
     //position limits
@@ -20,7 +21,7 @@ public class GestureHandler : MonoBehaviour {
     private Vector3 _handRightRel;
     private Vector3 _handLeftRel;
     private float _handDetZ = 0.3f;
-
+    private float _handDetDistX = 0.4f;
     private float _screenXDim = Screen.width;
     private float _screenYDim = Screen.height;
     
@@ -29,7 +30,7 @@ public class GestureHandler : MonoBehaviour {
     //private float _shoulderRightRotZ, _shoulderLeftRotZ;
     private float _shoulderRightRotY, _shoulderLeftRotY;
     private float _maxRotY;
-    private float _rotYOffset = 10;//offset to shift detectionarea upwards= ... _shoulderXRoty = originalRot + offset
+    private float _rotYOffset = 20;//offset to shift detectionarea downwards= ... _shoulderXRoty = originalRot + offset
     private float _detRotUpY = 0;
     private float _detRotDownY = -10;
 
@@ -63,6 +64,12 @@ public class GestureHandler : MonoBehaviour {
         }
     }
 
+    public void reset()
+    {
+        _maxRotY = 0;
+        _curShootState = shootState.NORM;
+        _curHandState = handState.MID;
+    }
     public bool detectPlayer() {
         return _moCapAvatar.detectPlayer();
     }
@@ -89,6 +96,10 @@ public class GestureHandler : MonoBehaviour {
         _shoulderLeftRotY = Mathf.Asin(_handLeftRel.y / _handRightRel.magnitude) * 180 / Mathf.PI + _rotYOffset;
         //_shoulderLeftRotZ = Mathf.Asin(_handLeftRel.z / _handRightRel.magnitude) * 180 / Mathf.PI + _rotYOffset;
 
+        if (_shoulderLeftRotY > 90)
+            _shoulderLeftRotY = 90;
+        if (_shoulderRightRotY > 90)
+            _shoulderRightRotY = 90;
         Vector3 headBase = _moCapAvatar.getRawWorldPosition(JointType.SpineMid);
         Vector3 head = _moCapAvatar.getRawWorldPosition(JointType.Head);
         Vector3 headDir = head - headBase;
@@ -145,7 +156,9 @@ public class GestureHandler : MonoBehaviour {
 
     public float detectFlap() //returns a float between 0 and 1 when flap is detected(1frame), else 0
     {
-        if (_handRightRel.z > _handDetZ) {return 0.0f; }
+        if (_handRightRel.z > _handDetZ && Mathf.Abs(_handRightRel.x - _handLeftRel.x) < _handDetDistX) {
+            _maxRotY = 0;
+            return 0.0f; }
         float avg = (_shoulderRightRotY + _shoulderLeftRotY) / 2;
         switch (_curHandState)
         {
@@ -168,7 +181,7 @@ public class GestureHandler : MonoBehaviour {
                     float temp = _maxRotY;
                     _maxRotY = 0;
                     if(temp != 0)
-                        return (temp-10)/80f;
+                        return temp/90f;
                 }
                 break;
             default: Debug.LogWarning("detectFlap no STATE"); break;

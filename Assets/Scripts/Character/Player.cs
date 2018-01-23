@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
-
-    [Header("Debug")]
-    [SerializeField]
-    private bool _isKinectEnabled = true;
-
+    
     [Header("Movement")]
 
     [SerializeField]
@@ -130,7 +126,7 @@ public class Player : MonoBehaviour {
             else
                 Physics.gravity = new Vector3(0, -_gravityConstant, 0);
 
-            if (_isKinectEnabled) {
+            if (GestureHandler.Instance.isKinectEnabled) {
                 //calculate flap force
                 GestureHandler.Instance.calcPositions();
                 //detect if flap or shoot gesture occured

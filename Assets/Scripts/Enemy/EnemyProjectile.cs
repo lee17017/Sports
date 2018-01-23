@@ -11,12 +11,17 @@ public class EnemyProjectile : MonoBehaviour
 
     public static float _timeToLive = 4f; //Sekunden anzahl, bevor das Projektil verschwindet
 
+    /*[SerializeField]
+    private float _startCollisionDelay;*/
+
     // Use this for initialization
     void Start()
     {
 		if (damage == 0) {
 			damage = 1;
 		}
+
+
     }
 
     // Update is called once per frame
@@ -39,6 +44,13 @@ public class EnemyProjectile : MonoBehaviour
         yield return new WaitForSeconds(_timeToLive);
         Destroy(this.gameObject);
     }
+
+    /* IEnumerator startingCollisionDelay()
+    {
+        this.GetComponent<Rigidbody>().detectCollisions = false;
+        yield return new WaitForSeconds(_startCollisionDelay);
+        this.GetComponent<Rigidbody>().detectCollisions = true;
+    } */
 
     void OnTriggerEnter(Collider collision)
     {

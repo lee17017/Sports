@@ -167,6 +167,7 @@ public class GameManager : MonoBehaviour {
 
         _isLoadingLevel = false;
         _currentLevel = scene;
+        GestureHandler.Instance.reset();
         Debug.Log("Done loading " + LevelPrefix + scene);
         yield return null;
     }
