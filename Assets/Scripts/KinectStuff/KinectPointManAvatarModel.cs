@@ -80,6 +80,10 @@ public class KinectPointManAvatarModel : BasicAvatarModel
 
         return currentModelJointRotation;
     }
+    public override bool detectPlayer()
+    {
+        return currentBody != null;
+    }
     public override Quaternion getRot(JointType jt){
         if (currentBody == null)
             return Quaternion.identity;
@@ -138,23 +142,28 @@ public class KinectPointManAvatarModel : BasicAvatarModel
 
         // use the first tracked body
         List<ulong> trackedIds = new List<ulong>();
+        bool found = false;
         foreach (var body in data)
         {
             if (body == null) continue;
             if (body.IsTracked)
             {
+                found = true;
                 currentBody = body;
                 break;
             }
         }
-
-        if (currentBody == null) return;
+        if (!found)
+        {
+            currentBody = null;
+            return;
+        }
 
         // update debug data
         foreach (JointType jt in fromToJoints.Keys)
         {
             //transforms[jt].rotation = getRawWorldRotation(jt);
-            jointTransforms[jt].position = getRawWorldPosition(jt);
+            jointTransforms[jt].position = getRawWorldPosition(jt)+new Vector3(0,-100,0);
             // debug: show computed rotatations
                 jointTransforms[jt].rotation = applyRelativeRotationChange(jt, Quaternion.identity);
         }

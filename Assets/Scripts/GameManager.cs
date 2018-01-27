@@ -5,26 +5,31 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 
+    [Header("IMPORTANT: will eventually crash game if not correct")]
+    [SerializeField]
+    private int _maxLevel = 0;
+    public int MaxLevel { get { return _maxLevel; } }
+
     private const string LevelPrefix = "Level";
+
+    private const float LevelLoadingTime = 2f;
 
     private static GameManager _instance = null;
     public static GameManager Instance { get { return _instance; } }
 
-    [SerializeField]
     private UIController _uiController;
-
-    [SerializeField]
     private LevelSettings _levelSettings;
-
-    [Header("IMPORTANT: will eventually crash game if not correct")]
-    [SerializeField]
-    private int _maxLevel = 0;
+    private Player _player;
 
     private int _life;
 
     private int _currentLevel;
 
     private bool _isLoadingLevel = false;
+
+    private float[] _checkpoints;
+    private int _lastCheckpoint = -1;
+    private float _loadWithCheckpoint = -1f;
 
     private void Awake() {
         if(_instance == null) {
@@ -40,7 +45,7 @@ public class GameManager : MonoBehaviour {
     }
 
     //called whenever a level is loaded
-    private void OnLevelLoaded() {
+    private void UpdateReferences() {
         //require some scripts and objects in scene
         _uiController = FindObjectOfType<UIController>();
         if (_uiController == null) {
@@ -48,12 +53,31 @@ public class GameManager : MonoBehaviour {
         }
 
         _levelSettings = FindObjectOfType<LevelSettings>();
-        if(_levelSettings == null) {
+        if (_levelSettings == null) {
             throw new System.Exception("No LevelSettings in scene! ");
         }
 
+        _player = FindObjectOfType<Player>();
+        if (_player == null) {
+            throw new System.Exception("No Player in scene! ");
+        }
+    }
+
+    //called whenever a level is loaded
+    private void InitializeLevel() {
         _life = _levelSettings.Life;
         _uiController.SetupUI(_levelSettings.Life);
+        _checkpoints = _levelSettings.Checkpoints;
+
+        _player.Activate();
+
+        //From Hendrik:
+        //Activating the CameraBox on Camera
+        Camera cam = Camera.main;
+        for (int i = 0; i < cam.transform.childCount; i++)
+        {
+            cam.transform.GetChild(i).gameObject.GetComponent<SphereCollider>().enabled = true;
+        }
     }
 
     public void OnDamagePlayer(int damage) {
@@ -68,16 +92,34 @@ public class GameManager : MonoBehaviour {
         if(x > _levelSettings.LevelEndX) {
             Win();
         }
+        if(_checkpoints.Length > _lastCheckpoint + 1 && x > _checkpoints[_lastCheckpoint + 1]){
+            _lastCheckpoint++;
+        }
     }
 
     private void Die() {
         Debug.Log("Dieded");
+        if(_lastCheckpoint != -1) {
+            _loadWithCheckpoint = _checkpoints[_lastCheckpoint];
+        }
+        LoadLevel(_currentLevel);
     }
 
     private void Win() {
         Debug.Log("Win!");
         if(_currentLevel+1 <= _maxLevel) {
             LoadLevel(_currentLevel+1);
+        } else {
+            Debug.Log("Congratulations! You beat the game!");
+            GameFinished();
+        }
+    }
+
+    private void GameFinished() {
+        _uiController.ShowWinScreen();
+
+        if (FindObjectOfType<Player>()) {
+            FindObjectOfType<Player>().Deactivate();
         }
     }
 
@@ -93,22 +135,66 @@ public class GameManager : MonoBehaviour {
         } else if(!_isLoadingLevel) {
             Debug.LogWarning("Already loading a Level, wait until done!");
         } else {
-            Debug.LogWarning("Level does not exist!");
+            Debug.LogWarning("Level " + level+ " does not exist!");
         }
     }
 
     IEnumerator LoadSceneAsync(int scene) {
         Debug.Log("Starting to load " + LevelPrefix + scene);
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(LevelPrefix + scene);
-
+        //AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(LevelPrefix + scene);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene);
         while (!asyncLoad.isDone) {
             yield return null;
         }
-        OnLevelLoaded();
+
+        UpdateReferences();
+
+        _uiController.UpdateLevelTitle("Level " + scene);
+
+        if(_loadWithCheckpoint != -1) {
+            _player.transform.Translate(new Vector3(_loadWithCheckpoint, 0, 0));
+        }
+
+        for (float i = LevelLoadingTime; i > 0; i -= .01f) {
+            _uiController.UpdateGameReadyTime(i);
+            yield return new WaitForSecondsRealtime(.01f);
+        }
+
+        InitializeLevel();
+
+        _lastCheckpoint = -1;
+        _loadWithCheckpoint = -1f;
+
         _isLoadingLevel = false;
-        _currentLevel++;
+        _currentLevel = scene;
+        GestureHandler.Instance.reset();
         Debug.Log("Done loading " + LevelPrefix + scene);
         yield return null;
     }
 
+    // From Hendrik: Developer TOols for Keyboard (for cheating and such)
+    private void LateUpdate()
+    {
+        for (int i = 0; i < numKeys.Length; i++)
+        {
+            if (Input.GetKeyDown(numKeys[i]))
+            {
+                int numberPressed = i;
+                LoadLevel(numberPressed);
+                break;
+            }
+        }
+    }
+    private KeyCode[] numKeys = {
+         KeyCode.Alpha1,
+         KeyCode.Alpha2,
+         KeyCode.Alpha3,
+         KeyCode.Alpha4,
+         KeyCode.Alpha5,
+         KeyCode.Alpha6,
+         KeyCode.Alpha7,
+         KeyCode.Alpha8,
+         KeyCode.Alpha9,
+         KeyCode.Alpha0,
+     };
 }

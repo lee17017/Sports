@@ -7,12 +7,20 @@ public class EnemyProjectile : MonoBehaviour
 
     public Vector3 direction;
     public float movementSpeed;
+	public int damage;
 
     public static float _timeToLive = 4f; //Sekunden anzahl, bevor das Projektil verschwindet
+
+    /*[SerializeField]
+    private float _startCollisionDelay;*/
 
     // Use this for initialization
     void Start()
     {
+		if (damage == 0) {
+			damage = 1;
+		}
+
 
     }
 
@@ -37,20 +45,30 @@ public class EnemyProjectile : MonoBehaviour
         Destroy(this.gameObject);
     }
 
+    /* IEnumerator startingCollisionDelay()
+    {
+        this.GetComponent<Rigidbody>().detectCollisions = false;
+        yield return new WaitForSeconds(_startCollisionDelay);
+        this.GetComponent<Rigidbody>().detectCollisions = true;
+    } */
+
     void OnTriggerEnter(Collider collision)
     {
         //Wenn er mit dem Spieler kollidiert, kassiert dieser ein Schaden und der Gegner stirbt
         if (collision.gameObject.tag == "Player")
         {
-            collision.GetComponent<Player>().Damage(1);
+			collision.GetComponent<Player>().Damage(this.damage);
             Destroy(this.gameObject);
         }
-        else if (collision.gameObject.tag == "CameraBox")
+    }
+
+    void OnTriggerExit(Collider collision)
+    {
+        if (collision.gameObject.tag == "CameraBox")
         {
             StartCoroutine(WaitBeforeDie());
         }
     }
-
     /*
     void OnBecameInvisible()
     {

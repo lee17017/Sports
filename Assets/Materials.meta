@@ -1,10 +1,18 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 2cce0ad6c66d85e4287fe480c236b14e
 folderAsset: yes
 timeCreated: 1515505013
 licenseType: Free
 DefaultImporter:
   externalObjects: {}
+=======
+guid: 661bb01c7796ed84c8a14ec771ac4b4a
+folderAsset: yes
+timeCreated: 1515760522
+licenseType: Free
+DefaultImporter:
+>>>>>>> liouBranch
   userData: 
   assetBundleName: 
   assetBundleVariant: 

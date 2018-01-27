@@ -6,20 +6,29 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
+    private static bool _collisionHack = false;
+
     [SerializeField]
     private int _health; //Wieviele Leben der Gegner hat
+    // Wenn -1, ist der Gegner unverwundbar und kann im Moment NIE sterben.
 
     [SerializeField]
     private float _timeToLive; //Sagt aus, wielange dieser Gegner aktiv überleben kann (0 = Infinity)
+    [SerializeField]
+    private int _collisionDamage; // Sagt aus, wieviel Schaden der Spieler bei Kontakt erleidet
 
     //------------------------
+    [Header("MOVEMENT")]
     [SerializeField]
     private bool _canMove; // true = kann sich bewegen
     #region movementSettings
     [SerializeField] // Einstellungen für die Bewegung
     private bool _moveToPlayer;
     [SerializeField]
+    private bool _notMoveBehindPlayer; // does not update movement when being left to the player
+    [SerializeField]
     private float _movementSpeed;
+    [Tooltip("0 means no updates")]
     [SerializeField]
     private float _updateBeaconPeriod;
     [SerializeField]
@@ -29,9 +38,12 @@ public class Enemy : MonoBehaviour
     #endregion
 
     //------------------------
+    [Header("SHOOTING")]
     [SerializeField]
     private bool _canShoot; // Einstellungen für schießen (<- false == kann nicht schießen)
     #region shootingSettings
+    [SerializeField]
+    private float _gunOffsetFactor;
     [SerializeField]
     private float _gunMinCD; //Kleinster Cooldown zwischen Schüssen
     [SerializeField]
@@ -40,6 +52,12 @@ public class Enemy : MonoBehaviour
     private float _gunStartCD; //CD, wenn der Gegner aktiviert wird
     [SerializeField]
     private float _accuracy; //1 = Zielt genau auf Spieler, <1 und >0 ist ungenauigkeitswahrscheinlichkeit
+    [SerializeField]
+    private float _projectileSpeed; //0 = double movespeed als geschwindigkeit
+    [SerializeField]
+    private int _projectileDamage; //0 = double movespeed als geschwindigkeit
+    [SerializeField]
+    private bool _notShootBehindPlayer;
     [SerializeField]
     private shootingTarget _gunTarget; // Hier wird festgelegt, in welche Richtung der Gegner schießt (auf den Spieler oder in feste Richtungen)
     //[SerializeField]
@@ -51,7 +69,7 @@ public class Enemy : MonoBehaviour
 
     enum shootingTarget
     {
-        Player, Left, Right, Down, Up
+        Player, Beacon, Left, Right, Down, Up
     }
     #endregion
 
@@ -66,6 +84,11 @@ public class Enemy : MonoBehaviour
         transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
         _player = GameObject.FindGameObjectWithTag("Player");
         _beacon.transform.position = new Vector3(_beacon.transform.position.x, _beacon.transform.position.y, 0f);
+
+        //if (_accuracy == 0)
+        //{
+        //    _accuracy = 1;
+        //}
     }
 
     // Update is called once per frame
@@ -76,10 +99,10 @@ public class Enemy : MonoBehaviour
         {
             Move();
         }
-        //if (_canShoot)
-        //{
-        //    Shoot();
-        //}
+        if (_canShoot && _isActive)
+        {
+            Shoot();
+        }
     }
 
     void InitialiseEnemy()
@@ -98,44 +121,51 @@ public class Enemy : MonoBehaviour
         //Wenn er mit dem Spieler kollidiert, kassiert dieser ein Schaden und der Gegner stirbt
         if (collision.gameObject.tag == "Player")
         {
-            _player.GetComponent<Player>().Damage(1);
+            _player.GetComponent<Player>().Damage(this._collisionDamage);
             Die();
         }
-        // Beim Aufprall eines Spieler-projektils verlieren sie per se 1 Leben.
-        else if (collision.gameObject.tag == "PlayerProjectile")
-        {
-            LooseHealth(1);
-        }
-        // Kollision mit Gegn. Projektil auch 1 Schaden, aber ihre Bewegungsgeschwindigkeit erhöht sich.
-        /*
+        // Kollision mit Gegn. Projektil erhöht ihre Bewegungsgeschwindigkeit
         else if (collision.gameObject.tag == "EnemyProjectile")
         {
-            LooseHealth(1);
-            _movementSpeed *= 1.5f;
+            //LooseHealth(1);
+            //_movementSpeed += 0.4f;
+            Destroy(collision.gameObject);
         }
-         */
-        else if (collision.gameObject.tag == "CameraBox")
+        // Aktivierung der Gegner:
+        else if (collision.gameObject.tag == "CameraBox" && !_isActive)
         {
-            if (_isActive)
+            InitialiseEnemy();
+            _isActive = true;
+        }
+        // Kollision mit Gegner stoppt diesen hier kurzzeitig:
+        else if (collision.gameObject.tag == "Enemy")
+        {
+            _collisionHack = !_collisionHack;
+            if (_collisionHack)
             {
-                _isActive = false;
-                StartCoroutine(TimeToDie());
+                StartCoroutine(CollisionDelay());
             }
-            else
-            {
-                InitialiseEnemy();
-                _isActive = true;
-            }
+        }
+    }
+    void OnTriggerExit(Collider collision)
+    {
+        if (_isActive & collision.gameObject.tag == "CameraBox")
+        {
+            _isActive = false;
+            StartCoroutine(TimeToDie());
         }
     }
 
     // Leben verlieren
-    void LooseHealth(int damage)
+    public void LooseHealth(int damage)
     {
-        _health -= damage;
-        if (_health <= 0)
+        if (_health != -1)
         {
-            Die();
+            _health -= damage;
+            if (_health <= 0)
+            {
+                Die();
+            }
         }
     }
 
@@ -152,26 +182,6 @@ public class Enemy : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    /* Alter OnBecame(In-)Visible Code
-    void OnBecameInvisible()
-    {
-        //Wenn ein Gegner nicht mehr in der kamera sichtbar ist, verschwindet es nach kurzer Zeit
-        if (_isActive)
-        {
-            _isActive = false;
-            StartCoroutine(TimeToDie());
-        }
-    }
-    void OnBecameVisible()
-    {
-        if (!_isActive)
-        {
-            InitialiseEnemy();
-            _isActive = true;
-        }
-    }
-     */
-
     // Der Bereich, der für die Bewegung verantwortlich ist
     #region Movement
     void Move()
@@ -184,17 +194,20 @@ public class Enemy : MonoBehaviour
 
     void GetMovingDirection()
     {
-        if (_moveToPlayer)
+        if (!_notMoveBehindPlayer || !IsBehindPlayer())
         {
-            _beacon.transform.position = _player.transform.position;
-            if (_updateBeaconPeriod > 0)
+            if (_moveToPlayer)
             {
-                StartCoroutine(UpdateBeacon());
+                _beacon.transform.position = _player.transform.position;
+                if (_updateBeaconPeriod > 0)
+                {
+                    StartCoroutine(UpdateBeacon());
+                }
             }
-        }
 
-        _direction = _beacon.transform.position - this.transform.position;
-        _direction = _direction.normalized;
+            _direction = _beacon.transform.position - this.transform.position;
+            _direction = _direction.normalized;
+        }
     }
 
     //Wartet und lässt die Richtung aktualisieren
@@ -209,7 +222,7 @@ public class Enemy : MonoBehaviour
     #region Shooting
     void Shoot()
     {
-        if (_canShoot)
+        if (_canShoot && (!_notShootBehindPlayer || !IsBehindPlayer()))
         {
             _canShoot = false;
 
@@ -232,11 +245,31 @@ public class Enemy : MonoBehaviour
                 case shootingTarget.Player:
                     shootDirection = _player.transform.position - this.transform.position;
                     break;
+                case shootingTarget.Beacon:
+                    shootDirection = _beacon.transform.position - this.transform.position;
+                    break;
             }
+
+            // Accuracy Berechnung:
+            float curAccX = Random.Range(1, 1 + (1 - _accuracy));
+            //shootDirection.x *= curAccX;
+            //float curAccY = Random.Range(1 - (1 - _accuracy), 1 + (1 - _accuracy));
+            //shootDirection.y *= curAccY;
+            shootDirection = new Vector3(shootDirection.x * curAccX, shootDirection.y, 0);
             shootDirection = shootDirection.normalized;
-            GameObject projc = Instantiate(_enemyProjectile, this.transform.position, Quaternion.identity);
-            projc.GetComponent<EnemyProjectile>().movementSpeed = this._movementSpeed * 2f;
+
+            // Start Position bestimmen:
+            Vector3 startPosition = this.transform.position + _gunOffsetFactor * shootDirection;
+
+            GameObject projc = Instantiate(_enemyProjectile, startPosition, Quaternion.identity);
+
+            projc.GetComponent<EnemyProjectile>().movementSpeed = _projectileSpeed;
+            if (_projectileSpeed == 0)
+            {
+                projc.GetComponent<EnemyProjectile>().movementSpeed = this._movementSpeed * 2f;
+            }
             projc.GetComponent<EnemyProjectile>().direction = shootDirection;
+            projc.GetComponent<EnemyProjectile>().damage = this._projectileDamage;
 
             float cd = (Random.value * _gunMaxCD) + _gunMinCD;
             StartCoroutine(GunCooldown(cd));
@@ -249,8 +282,24 @@ public class Enemy : MonoBehaviour
         _canShoot = false;
         yield return new WaitForSeconds(cd);
         _canShoot = true;
-        Shoot();
+        //if (_isActive)
+        //{
+        //    Shoot();
+        //}
     }
     #endregion
 
+
+    bool IsBehindPlayer()
+    {
+        // wenn der gegner min. 1 x koordinate weiter links ist.
+        return (this.transform.position.x + 1 < _player.transform.position.x);
+    }
+
+    IEnumerator CollisionDelay()
+    {
+        _isActive = false;
+        yield return new WaitForSeconds(1f);
+        _isActive = true;
+    }
 }

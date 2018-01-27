@@ -54,7 +54,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1018852764648952}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.9004765, y: 2.54, z: -3.2662048}
+  m_LocalPosition: {x: -4, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4821884587262790}
@@ -123,7 +123,7 @@ Rigidbody:
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 8
@@ -162,10 +162,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c20b9bf3b5d55f34e9f5408a34032010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 1
+  _health: -1
   _timeToLive: 10
+  _collisionDamage: 3
   _canMove: 0
   _moveToPlayer: 0
+  _notMoveBehindPlayer: 0
   _movementSpeed: 0
   _updateBeaconPeriod: 0
   _beacon: {fileID: 1018852764648952}
@@ -174,6 +176,9 @@ MonoBehaviour:
   _gunMaxCD: 0
   _gunStartCD: 0
   _accuracy: 0
+  _projectileSpeed: 0
+  _projectileDamage: 0
+  _notShootBehindPlayer: 0
   _gunTarget: 0
   _enemyProjectile: {fileID: 1455857397045764, guid: 82d5cee1d90fe7449b94a626ff9994ba,
     type: 2}
