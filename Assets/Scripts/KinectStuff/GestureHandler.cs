@@ -138,7 +138,7 @@ public class GestureHandler : MonoBehaviour {
                     _curShootState = shootState.SHOOT;
                     _curHandState = handState.MID;
                     _maxRotY = 0;
-                    Debug.Log("PEEEEEEEEEEEEEEEEEEEEEEEEEEWWWWWWWWWWW");
+                    //Debug.Log("PEEEEEEEEEEEEEEEEEEEEEEEEEEWWWWWWWWWWW");
                     return true;
                 }
                 break;

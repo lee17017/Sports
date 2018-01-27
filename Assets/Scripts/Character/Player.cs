@@ -49,8 +49,11 @@ public class Player : MonoBehaviour {
     private bool _isActive = false;
     public bool IsActive { get { return _isActive; } }
 
+    private float _borderUp, _borderDown;
 	// Use this for initialization
 	void Start () {
+        _borderUp = GameObject.Find("Main Camera").GetComponent<Camera>().ViewportToWorldPoint(new Vector3(0, 1, 1)).y + transform.localScale.y / 4;
+        _borderDown = GameObject.Find("Main Camera").GetComponent<Camera>().ViewportToWorldPoint(new Vector3(0, 0, 1)).y - transform.localScale.y/2;
         //initialize gravity vector in -y direction
         Physics.gravity = new Vector3(0, -_gravityConstant, 0);
         _rig = GetComponent<Rigidbody>();
@@ -115,7 +118,21 @@ public class Player : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (_isActive) { 
+        if (_isActive) {
+            if(transform.position.y > _borderUp){
+                Damage(1);
+                transform.position = new Vector3(transform.position.x, _borderUp-0.01f, transform.position.z);
+                _rig.velocity = new Vector3(_rig.velocity.x, _rig.velocity.y * -0.5f, _rig.velocity.z);
+                return;
+            }
+            if (transform.position.y < _borderDown)
+            {
+                Damage(1);
+                transform.position = new Vector3(transform.position.x, _borderDown+0.05f, transform.position.z);
+                _rig.velocity = new Vector3(_rig.velocity.x, 0.25f, _rig.velocity.z);
+                return;
+            }
+
             float x_vel = 0;
 
             //get y velocity from rigidbody
@@ -194,6 +211,8 @@ public class Player : MonoBehaviour {
             GameManager.Instance.UpdatePlayerPosition(transform.position.x);
         }
     }
+
+    
 
     //calculate the initial force which is then applied to the rigidbody
     private float GetFlapForce(float flapForce) {
