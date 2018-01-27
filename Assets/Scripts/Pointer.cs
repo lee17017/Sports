@@ -76,14 +76,12 @@ public class Pointer : MonoBehaviour {
                 b = result.gameObject.GetComponentInParent<Button>();
             }
             
-            if (b != null)
+            if (b != null && b.IsInteractable())
             {
                 curTimer += Time.deltaTime;
                 if(_curImage != null)
                 {
                     _curImage.fillAmount = _curImage.fillAmount + Time.deltaTime * (holdTime+0.2f);
-                    Debug.Log("fill");
-                    Debug.Log(_curImage.fillAmount);
                 }
                 if (curTimer > holdTime) {
                     b.onClick.Invoke();
