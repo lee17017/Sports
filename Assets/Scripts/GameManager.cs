@@ -107,6 +107,7 @@ public class GameManager : MonoBehaviour {
 
     public void RestartLevel()
     {
+        Time.timeScale = 1;
         if (_lastCheckpoint != -1)
         {
             _loadWithCheckpoint = _checkpoints[_lastCheckpoint];
@@ -115,12 +116,14 @@ public class GameManager : MonoBehaviour {
     }
     public void LoadNextLevel()
     {
+        Time.timeScale = 1;
         LoadLevel(_currentLevel + 1);
     }
 
     private void Win() {
         Debug.Log("Win!");
-        if(_currentLevel+1 <= _maxLevel) {
+        Time.timeScale = 0;
+        if (_currentLevel+1 <= _maxLevel) {
             _unlockedLevel++;
             _uiController.ActivateMenuScreen(false);
         } else {
@@ -141,6 +144,7 @@ public class GameManager : MonoBehaviour {
     public void LoadMainMenu()
     {
         SceneManager.LoadScene(0);
+        Time.timeScale = 1;
     }
 
     public void LoadLevel(int level) {
@@ -148,7 +152,8 @@ public class GameManager : MonoBehaviour {
         if (!_isLoadingLevel && level <= _maxLevel) {
             _isLoadingLevel = true;
 
-           
+            Time.timeScale = 1;
+
             StartCoroutine(LoadSceneAsync(level));
         } else if(!_isLoadingLevel) {
             Debug.LogWarning("Already loading a Level, wait until done!");

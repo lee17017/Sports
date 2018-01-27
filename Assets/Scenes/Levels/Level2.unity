@@ -171,6 +171,11 @@ Transform:
   m_PrefabParentObject: {fileID: 4423336056919310, guid: 1ff35364f0ca8434c8f2791a063919fa,
     type: 2}
   m_PrefabInternal: {fileID: 458670841}
+--- !u!20 &458670843 stripped
+Camera:
+  m_PrefabParentObject: {fileID: 20277783108365460, guid: 1ff35364f0ca8434c8f2791a063919fa,
+    type: 2}
+  m_PrefabInternal: {fileID: 458670841}
 --- !u!1001 &647748628
 Prefab:
   m_ObjectHideFlags: 0
@@ -865,6 +870,11 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 223642616715892430, guid: 9dd1dd9231f2b92429537777ac3121fa,
+        type: 2}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 458670843}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9dd1dd9231f2b92429537777ac3121fa, type: 2}
   m_IsPrefabParent: 0
