@@ -19,8 +19,11 @@ public class PlayerProjectile : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider collision) {
-        if (collision.gameObject.GetComponent<Enemy>()) {
-            collision.gameObject.GetComponent<Enemy>().LooseHealth(_damage);
+        if (collision.gameObject.tag == "Enemy") {
+            if (collision.gameObject.GetComponent<Enemy>() != null)
+            {
+                collision.gameObject.GetComponent<Enemy>().LooseHealth(_damage);
+            }
             Destroy(this.gameObject);
         }
         else if (collision.gameObject.GetComponent<EnemyProjectile>())

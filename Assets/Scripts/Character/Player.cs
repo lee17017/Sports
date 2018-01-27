@@ -172,7 +172,7 @@ public class Player : MonoBehaviour {
                         _rig.velocity = new Vector3(0, y_vel / 2f, 0);
                     }
                     //add force
-                    _rig.AddForce(new Vector3(0, GetFlapForce(0.5f), 0));
+                    _rig.AddForce(new Vector3(0, GetFlapForce(0.3f), 0));
                     Debug.Log("Up Arrow Pressed");
                 }
                 if (Input.GetKeyDown(KeyCode.Space)) {
