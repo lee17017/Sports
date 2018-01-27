@@ -8,6 +8,7 @@ public class Pointer : MonoBehaviour {
 	// Use this for initialization
     private Camera _camera;
     private Renderer _rend;
+    private Image _curImage;
     public Color normColor, activeColor;
     public float holdTime;
     private float curTimer;
@@ -33,6 +34,11 @@ public class Pointer : MonoBehaviour {
             {
                 _rend.material.color = activeColor;
                 curTimer = 0;
+                if (_curImage != null)
+                {
+                    _curImage.fillAmount = 0;
+                    _curImage = null;
+                }
             }
 
         }
@@ -51,22 +57,51 @@ public class Pointer : MonoBehaviour {
         EventSystem.current.RaycastAll(pointer, raycastResults);
         if (raycastResults.Count > 1)
             Debug.LogWarning("More than one target hit by raycast");
+   
         foreach (RaycastResult result in raycastResults)
         {
-            //Debug.Log("Hit " + raycastResults.Count + result.gameObject.name);
+            Debug.Log("Hit " + raycastResults.Count + result.gameObject.name);
 
             
             Button b = result.gameObject.GetComponent<Button>();
+            Image i  = result.gameObject.GetComponent<Image>();
+            if(i != _curImage)
+            {
+                if(_curImage != null)
+                    _curImage.fillAmount = 0;
+                _curImage = i;
+                curTimer = 0;
+            }
+            if(b == null){
+                b = result.gameObject.GetComponentInParent<Button>();
+            }
+            
             if (b != null)
             {
                 curTimer += Time.deltaTime;
+                if(_curImage != null)
+                {
+                    _curImage.fillAmount = _curImage.fillAmount + Time.deltaTime * (holdTime+0.2f);
+                    Debug.Log("fill");
+                    Debug.Log(_curImage.fillAmount);
+                }
                 if (curTimer > holdTime) {
                     b.onClick.Invoke();
                 }
             }
         }
         if (raycastResults.Count == 0)
+        {
             curTimer = 0;
+            if (_curImage != null)
+            {
+                _curImage.fillAmount = 0;
+                _curImage = null;
+            }
+                
+        }
+
+
     }
 
 }
