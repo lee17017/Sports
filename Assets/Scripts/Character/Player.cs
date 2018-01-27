@@ -173,7 +173,7 @@ public class Player : MonoBehaviour {
                     }
                     //add force
                     _rig.AddForce(new Vector3(0, GetFlapForce(0.3f), 0));
-                    Debug.Log("Up Arrow Pressed");
+                    //Debug.Log("Up Arrow Pressed");
                 }
                 if (Input.GetKeyDown(KeyCode.Space)) {
                     Shoot();

@@ -27,9 +27,13 @@ public class EnemyProjectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.LookAt(transform.position + direction, Vector3.up);
-
-        //transform.rotation = Quaternion.Euler(-90, transform.rotation.y, transform.rotation.z);
+        float zRot;
+        if (direction.x == 0)
+            zRot = 90 + (direction.y <= 0 ? 0 : 180f);
+        else
+            zRot = Mathf.Atan(direction.y / direction.x) / Mathf.PI * 180 + (direction.x <= 0 ? 0 : 180f);
+        
+        transform.rotation = Quaternion.Euler(0, 0, zRot);
 
 
         float timeFactor = movementSpeed * Time.deltaTime;

@@ -48,6 +48,7 @@ public class GameManager : MonoBehaviour {
         if(_maxLevel == 0) {
             _maxLevel = SceneManager.sceneCountInBuildSettings - 1;
         }
+        _unlockedLevel = System.Math.Max(PlayerPrefs.GetInt("unlockedLevel"),1);
     }
 
     //called whenever a level is loaded
@@ -131,7 +132,8 @@ public class GameManager : MonoBehaviour {
         Debug.Log("Win!");
         Time.timeScale = 0;
         if (_currentLevel+1 <= _maxLevel) {
-            _unlockedLevel = System.Math.Max(_currentLevel*1, _unlockedLevel);
+            _unlockedLevel = System.Math.Max(_currentLevel+1, _unlockedLevel);
+            PlayerPrefs.SetInt("unlockedLevel", _unlockedLevel);
             _uiController.ActivateMenuScreen(false);
         } else {
             Debug.Log("Congratulations! You beat the game!");
@@ -209,6 +211,13 @@ public class GameManager : MonoBehaviour {
     // From Hendrik: Developer TOols for Keyboard (for cheating and such)
     private void LateUpdate()
     {
+        //from Liou: hack im hack 
+        if (Input.GetKeyDown("p"))
+        {
+            _unlockedLevel = 1;
+            PlayerPrefs.SetInt("unlockedLevel", 1);
+        }
+            
         for (int i = 0; i < numKeys.Length; i++)
         {
             if (Input.GetKeyDown(numKeys[i]))
