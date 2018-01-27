@@ -34,6 +34,9 @@ public class GameManager : MonoBehaviour {
     private int _lastCheckpoint = -1;
     private float _loadWithCheckpoint = -1f;
 
+    [SerializeField]
+    private bool won = false;
+
     private void Awake() {
         if(_instance == null) {
             _instance = this;
@@ -64,6 +67,9 @@ public class GameManager : MonoBehaviour {
         if (_player == null) {
             throw new System.Exception("No Player in scene! ");
         }
+
+        won = false;
+        Time.timeScale = 1;
     }
 
     //called whenever a level is loaded
@@ -92,7 +98,8 @@ public class GameManager : MonoBehaviour {
     }
 
     public void UpdatePlayerPosition(float x) {
-        if(x > _levelSettings.LevelEndX) {
+        if(x > _levelSettings.LevelEndX && !won) {
+            won = true;
             Win();
         }
         if(_checkpoints.Length > _lastCheckpoint + 1 && x > _checkpoints[_lastCheckpoint + 1]){
@@ -124,7 +131,7 @@ public class GameManager : MonoBehaviour {
         Debug.Log("Win!");
         Time.timeScale = 0;
         if (_currentLevel+1 <= _maxLevel) {
-            _unlockedLevel++;
+            _unlockedLevel = System.Math.Max(_currentLevel*1, _unlockedLevel);
             _uiController.ActivateMenuScreen(false);
         } else {
             Debug.Log("Congratulations! You beat the game!");
@@ -152,7 +159,7 @@ public class GameManager : MonoBehaviour {
         if (!_isLoadingLevel && level <= _maxLevel) {
             _isLoadingLevel = true;
 
-            Time.timeScale = 1;
+          
 
             StartCoroutine(LoadSceneAsync(level));
         } else if(!_isLoadingLevel) {

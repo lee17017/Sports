@@ -18,6 +18,7 @@ public class MainMenuUIController : MonoBehaviour {
 
     //maxLevel = biggest level index, unlockedLevel = biggest unlocked level index
     private void InitializeLevelSelection(int maxLevel, int unlockedLevel) {
+        Debug.Log(maxLevel + "  " + unlockedLevel);
         for(int i=1; i<=unlockedLevel; i++) {
             Button temp = Instantiate(_levelSelectionButton, _levelSelectionPanel, false);
             temp.GetComponent<LevelSelectionButton>().Initialize(GameManager.Instance, i);
