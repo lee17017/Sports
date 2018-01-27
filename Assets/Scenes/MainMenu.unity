@@ -1339,7 +1339,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4864130143809464, guid: c632d5a2ec0ca9b47b123088374bdc8f, type: 2}
       propertyPath: m_LocalScale.z
-      value: 1
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 114611212001982448, guid: c632d5a2ec0ca9b47b123088374bdc8f,
         type: 2}
@@ -1350,6 +1350,11 @@ Prefab:
         type: 2}
       propertyPath: holdTime
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114611212001982448, guid: c632d5a2ec0ca9b47b123088374bdc8f,
+        type: 2}
+      propertyPath: z
+      value: 89
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c632d5a2ec0ca9b47b123088374bdc8f, type: 2}
@@ -2329,7 +2334,6 @@ MonoBehaviour:
   _levelSelectionPanel: {fileID: 1049786001}
   _levelSelectionButton: {fileID: 114114064770080934, guid: 8e94128f9f45b65498ca05092b6067b9,
     type: 2}
-  _gameManager: {fileID: 1211601768}
 --- !u!1 &1883453668
 GameObject:
   m_ObjectHideFlags: 0

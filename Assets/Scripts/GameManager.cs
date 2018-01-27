@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour {
     private int _maxLevel = 0;
     public int MaxLevel { get { return _maxLevel; } }
 
+    private int _unlockedLevel = 1;
+    public int UnlockedLevel { get { return _unlockedLevel; } }
+
     private const string LevelPrefix = "Level";
 
     private const float LevelLoadingTime = 2f;
@@ -82,7 +85,7 @@ public class GameManager : MonoBehaviour {
 
     public void OnDamagePlayer(int damage) {
         _life -= damage;
-        _uiController.UpdateLife(_life);
+        _uiController.UpdateLife(System.Math.Max(_life,0));
         if (_life <= 0) {
             Die();
         }
@@ -98,22 +101,34 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Die() {
-        Debug.Log("Dieded");
-        if(_lastCheckpoint != -1) {
+        Time.timeScale = 0;
+        _uiController.ActivateMenuScreen(true);
+    }
+
+    public void RestartLevel()
+    {
+        if (_lastCheckpoint != -1)
+        {
             _loadWithCheckpoint = _checkpoints[_lastCheckpoint];
         }
         LoadLevel(_currentLevel);
+    }
+    public void LoadNextLevel()
+    {
+        LoadLevel(_currentLevel + 1);
     }
 
     private void Win() {
         Debug.Log("Win!");
         if(_currentLevel+1 <= _maxLevel) {
-            LoadLevel(_currentLevel+1);
+            _unlockedLevel++;
+            _uiController.ActivateMenuScreen(false);
         } else {
             Debug.Log("Congratulations! You beat the game!");
             GameFinished();
         }
     }
+
 
     private void GameFinished() {
         _uiController.ShowWinScreen();
@@ -123,14 +138,17 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public void LoadMainMenu()
+    {
+        SceneManager.LoadScene(0);
+    }
+
     public void LoadLevel(int level) {
+        
         if (!_isLoadingLevel && level <= _maxLevel) {
             _isLoadingLevel = true;
 
-            if(_uiController != null) {
-                _uiController.ActivateLoadingScreen();
-            }
-
+           
             StartCoroutine(LoadSceneAsync(level));
         } else if(!_isLoadingLevel) {
             Debug.LogWarning("Already loading a Level, wait until done!");
@@ -148,6 +166,10 @@ public class GameManager : MonoBehaviour {
         }
 
         UpdateReferences();
+        if (_uiController != null)
+        {
+            _uiController.ActivateLoadingScreen();
+        }
 
         _uiController.UpdateLevelTitle("Level " + scene);
 

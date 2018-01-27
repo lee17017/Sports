@@ -12,9 +12,11 @@ public class Pointer : MonoBehaviour {
     public Color normColor, activeColor;
     public float holdTime;
     private float curTimer;
+    public float z;
 	void Start () {
         _camera = GameObject.Find("Main Camera").GetComponent<Camera>();
         _rend = GetComponent<Renderer>();
+        curTimer = 0;
 	}
 	
 	// Update is called once per frame
@@ -23,7 +25,8 @@ public class Pointer : MonoBehaviour {
         {
             GestureHandler.Instance.calcPositions();
             Vector2 handPos = GestureHandler.Instance.getMappedRightHandPosition();
-            transform.position = _camera.ViewportToWorldPoint(new Vector3(handPos.x, handPos.y, 89));
+            transform.position = _camera.ViewportToWorldPoint(new Vector3(handPos.x, handPos.y, 1));
+            transform.position = new Vector3(transform.position.x, transform.position.y, z);
 
             if (GestureHandler.Instance.getRightHandState())
             {
@@ -78,10 +81,12 @@ public class Pointer : MonoBehaviour {
             
             if (b != null && b.IsInteractable())
             {
-                curTimer += Time.deltaTime;
+                curTimer += Time.unscaledDeltaTime;
+                Debug.Log(curTimer);
                 if(_curImage != null)
                 {
-                    _curImage.fillAmount = _curImage.fillAmount + Time.deltaTime * (holdTime+0.2f);
+              
+                    _curImage.fillAmount = _curImage.fillAmount + Time.unscaledDeltaTime * (holdTime+0.2f);
                 }
                 if (curTimer > holdTime) {
                     b.onClick.Invoke();
