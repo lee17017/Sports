@@ -16,6 +16,14 @@ public class MainMenuUIController : MonoBehaviour {
         InitializeLevelSelection(GameManager.Instance.MaxLevel, GameManager.Instance.UnlockedLevel);
 	}
 
+    public void OnQuit() {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+         Application.Quit();
+#endif
+    }
+
     //maxLevel = biggest level index, unlockedLevel = biggest unlocked level index
     private void InitializeLevelSelection(int maxLevel, int unlockedLevel) {
         Debug.Log(maxLevel + "  " + unlockedLevel);
