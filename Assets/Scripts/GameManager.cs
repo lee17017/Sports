@@ -128,7 +128,7 @@ public class GameManager : MonoBehaviour {
         LoadLevel(_currentLevel + 1);
     }
 
-    private void Win() {
+    public void Win() {
         Debug.Log("Win!");
         Time.timeScale = 0;
         if (_currentLevel+1 <= _maxLevel) {

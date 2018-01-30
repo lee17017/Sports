@@ -12,6 +12,7 @@ TagManager:
   - PlayerProjectile
   - EnemyProjectile
   - CameraBox
+  - GameManager
   layers:
   - Default
   - TransparentFX

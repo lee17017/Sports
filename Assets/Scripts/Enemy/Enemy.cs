@@ -107,14 +107,25 @@ public class Enemy : MonoBehaviour
                 // Update LookAt() - Rotation:
                 if (_canShoot && _gunTarget == shootingTarget.Player)
                 {
-                    transform.LookAt(_player.transform.position);
+                    LookDirection(_player.transform.position - transform.position);
                 }
                 else if (_canMove)
                 {
-                    transform.LookAt(transform.position + _direction);
+                    LookDirection(_direction);
                 }
             }
         } 
+    }
+
+    void LookDirection(Vector3 direction)
+    {
+        float zRot;
+        if (direction.x == 0)
+            zRot = 90 + (direction.y <= 0 ? 0 : 180f);
+        else
+            zRot = Mathf.Atan(direction.y / direction.x) / Mathf.PI * 180 + (direction.x <= 0 ? 0 : 180f);
+
+        transform.rotation = Quaternion.Euler(0, 0, zRot);
     }
 
     void InitialiseEnemy()

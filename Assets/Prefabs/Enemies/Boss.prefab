@@ -22,9 +22,9 @@ GameObject:
   - component: {fileID: 33649882587408102}
   - component: {fileID: 23316364577994824}
   - component: {fileID: 54145350653423808}
-  - component: {fileID: 114110581727004246}
   - component: {fileID: 64031985287580894}
   - component: {fileID: 114894073169957670}
+  - component: {fileID: 114700604904713398}
   m_Layer: 0
   m_Name: Boss
   m_TagString: Enemy
@@ -55,7 +55,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1306622847185826}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.88, y: 1.42, z: 0}
+  m_LocalPosition: {x: 12.02, y: 1.42, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4642508102751038}
@@ -150,38 +150,6 @@ MeshCollider:
   m_InflateMesh: 0
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 4300000, guid: d2f3d3578527c0848a936403c52de944, type: 3}
---- !u!114 &114110581727004246
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1306622847185826}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c20b9bf3b5d55f34e9f5408a34032010, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _health: 5
-  _timeToLive: 5
-  _collisionDamage: 3
-  _canMove: 1
-  _moveToPlayer: 1
-  _notMoveBehindPlayer: 0
-  _movementSpeed: 0.5
-  _updateBeaconPeriod: 0.1
-  _beacon: {fileID: 1359972984497848}
-  _canShoot: 1
-  _gunOffsetFactor: 0
-  _gunMinCD: 2.5
-  _gunMaxCD: 3
-  _gunStartCD: 5
-  _accuracy: 0.1
-  _projectileSpeed: 3.5
-  _projectileDamage: 1
-  _notShootBehindPlayer: 0
-  _gunTarget: 0
-  _enemyProjectile: {fileID: 1304778122430914, guid: 1595f1fd8ac77d84ea6fe90d8d15f001,
-    type: 2}
 --- !u!114 &114408268367389262
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -193,6 +161,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa92ceae7300876478f52ab512233ea7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114700604904713398
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1306622847185826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1a95c9b48de77445aa3918003022b5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _health: 2
+  _timeToLive: 5
+  _collisionDamage: 3
+  scoreText: {fileID: 0}
+  _movementSpeed: 0.8
+  _updateBeaconPeriod: 0
+  _beacon: {fileID: 1359972984497848}
+  _gunOffsetFactor: 2.5
+  _gunMinCD: 2.2
+  _gunMaxCD: 4
+  _gunStartCD: 3
+  _accuracy: 0
+  _projectileSpeed: 3
+  _projectileDamage: 1
+  _enemyProjectile: {fileID: 1304778122430914, guid: 1595f1fd8ac77d84ea6fe90d8d15f001,
+    type: 2}
+  _staticEnemy: {fileID: 1588986195740000, guid: 8541821b82aad3749bc209ceb4d24eb6,
+    type: 2}
+  _maxMove: 5
+  _maxMinCD: 0.5
+  _maxMaxCD: 1
+  _maxProjectileSpeed: 5.5
 --- !u!114 &114894073169957670
 MonoBehaviour:
   m_ObjectHideFlags: 1
