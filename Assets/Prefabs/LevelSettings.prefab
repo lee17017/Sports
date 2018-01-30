@@ -53,3 +53,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _life: 0
   _levelEndX: 0
+  _checkpoints: []
+  flagPolePrefab: {fileID: 1248805478862276, guid: 83f344f9f923c704da12c077f3dac2ce,
+    type: 2}

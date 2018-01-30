@@ -15,6 +15,18 @@ public class LevelSettings : MonoBehaviour {
     private float[] _checkpoints;
     public float[] Checkpoints { get { return _checkpoints; } }
 
+    public GameObject flagPolePrefab;
+
+    private void Start()
+    {
+        flagPolePrefab = Instantiate(flagPolePrefab, new Vector3(_levelEndX - 0.9f, 1.1f, 0), Quaternion.identity);
+    }
+
+    public void WinLevel()
+    {
+        flagPolePrefab.GetComponent<Flagpole>().changePole();
+    }
+
     private void OnDrawGizmos() {
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(new Vector3(_levelEndX, -10, 0), new Vector3(_levelEndX, 10, 0));

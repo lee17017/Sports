@@ -65,7 +65,7 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private GameObject _enemyProjectile; // Das Projektil Prefab
 
-    private bool _onCooldown = false;
+    private bool _gunOnCooldown = false;
 
     enum shootingTarget
     {
@@ -86,36 +86,57 @@ public class Enemy : MonoBehaviour
 
         if (_canShoot || _canMove)
         _beacon.transform.position = new Vector3(_beacon.transform.position.x, _beacon.transform.position.y, 0f);
-
-        //if (_accuracy == 0)
-        //{
-        //    _accuracy = 1;
-        //}
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (_isActive)
+        {
+            if (_canMove)
+            {
+                Move();
+            }
+            if (_canShoot && !_gunOnCooldown)
+            {
+                Shoot();
+            }
 
-        if (_canMove && _isActive)
-        {
-            Move();
-        }
-        if (_canShoot && _isActive)
-        {
-            Shoot();
-        }
+            if (_startHack)
+            {
+                // Update LookAt() - Rotation:
+                if (_canShoot && _gunTarget == shootingTarget.Player)
+                {
+                    transform.LookAt(_player.transform.position);
+                }
+                else if (_canMove)
+                {
+                    transform.LookAt(transform.position + _direction);
+                }
+            }
+        } 
     }
 
     void InitialiseEnemy()
     {
         GetMovingDirection(); //erste Mal _direction setzen
 
-        if (_canShoot)
+        if (_canShoot && !_gunOnCooldown)
         {
             StartCoroutine(GunCooldown(_gunStartCD));
         }
+
+        StartCoroutine(startCD()); // Hack
     }
+
+    // Small Hack
+    private bool _startHack = false;
+    IEnumerator startCD()
+    {
+        yield return new WaitForSeconds(2);
+        _startHack = true;
+    }
+    // Hack End
 
     // Hier kommen alle Kollisionsabfragen rein
     void OnTriggerEnter(Collider collision)
@@ -224,9 +245,9 @@ public class Enemy : MonoBehaviour
     #region Shooting
     void Shoot()
     {
-        if (_canShoot && (!_notShootBehindPlayer || !IsBehindPlayer()))
+        if (!_gunOnCooldown && (!_notShootBehindPlayer || !IsBehindPlayer()))
         {
-            _canShoot = false;
+            _gunOnCooldown = true;
 
             //really shoots, TBD
             Vector3 shootDirection = new Vector3(-1, 0, 0);
@@ -281,9 +302,9 @@ public class Enemy : MonoBehaviour
     //Wartet bis der Gegner wieder schießen kann
     IEnumerator GunCooldown(float cd)
     {
-        _canShoot = false;
+        _gunOnCooldown = true;
         yield return new WaitForSeconds(cd);
-        _canShoot = true;
+        _gunOnCooldown = false;
         //if (_isActive)
         //{
         //    Shoot();
