@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: a524a60ac77cc144abe629b437d87580
-timeCreated: 1517573467
+guid: 1642f861ef5426242931e21a4c65d9db
+timeCreated: 1517575191
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
@@ -51,7 +51,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: RubinRed
-    second: {fileID: 2100000, guid: 4ea699e311a4b504c866f36dcbb0467e, type: 2}
+    second: {fileID: 2100000, guid: 68327ce8c86a21e4ea405fad1ef1f880, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
