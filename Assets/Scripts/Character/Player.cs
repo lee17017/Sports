@@ -50,7 +50,9 @@ public class Player : MonoBehaviour {
     public bool IsActive { get { return _isActive; } }
 
     private float _borderUp, _borderDown;
-	// Use this for initialization
+    // Use this for initialization
+    private SkinnedMeshRenderer _skinRend;
+    private int _animation = 100;
 	void Start () {
         _borderUp = GameObject.Find("Main Camera").GetComponent<Camera>().ViewportToWorldPoint(new Vector3(0, 1, 1)).y + transform.localScale.y / 4;
         _borderDown = GameObject.Find("Main Camera").GetComponent<Camera>().ViewportToWorldPoint(new Vector3(0, 0, 1)).y - transform.localScale.y/2;
@@ -60,6 +62,7 @@ public class Player : MonoBehaviour {
         _collider = GetComponent<Collider>();
 
         _rig.useGravity = false;
+        _skinRend = GetComponentInChildren<SkinnedMeshRenderer>();
         //if border is not set, try get the camera view and calculate
         //this is more of a fallback and should not be used necessarily
         if (_borderLeft == 0 && _borderRight == 0) {
@@ -94,6 +97,30 @@ public class Player : MonoBehaviour {
         GameManager.Instance.OnDamagePlayer(damage);
     }
 
+    private IEnumerator flapAnimation() {
+        if(_animation != 100)
+        {
+            Debug.Log("overlap!");
+            yield break;
+        }
+        if(Time.timeScale == 0)
+        {
+            Debug.Log("paused");
+            yield break;
+        }
+        for (int i = 0; i < 10; i++)
+        {
+            _animation = _animation - 11;
+            _skinRend.SetBlendShapeWeight(0, _animation);
+            yield return new WaitForEndOfFrame();
+        }
+        for (int i = 0; i < 10; i++)
+        {
+            _animation = _animation + 11;
+            _skinRend.SetBlendShapeWeight(0, _animation);
+            yield return new WaitForEndOfFrame();
+        }
+    }
     private IEnumerator InvincibleFlash() {
         float step = .2f;
         bool flash = true;
@@ -154,6 +181,7 @@ public class Player : MonoBehaviour {
                     //Debug.Log("Flap detected with force: " + flap + "  ,normalized from 0 to 1");
                     //if character is falling down reduce gravity on flap
                     //so it is a lot easier to recover from falling
+                    StartCoroutine("flapAnimation");
                     if (y_vel < 0) {
                         _rig.velocity = new Vector3(0, y_vel / 2f, 0);
                     }
@@ -168,6 +196,8 @@ public class Player : MonoBehaviour {
             //for testing
             else {
                 if (Input.GetKeyDown(KeyCode.UpArrow)) {
+
+                    StartCoroutine("flapAnimation");
                     if (y_vel < 0) {
                         _rig.velocity = new Vector3(0, y_vel / 2f, 0);
                     }
@@ -226,6 +256,7 @@ public class Player : MonoBehaviour {
         GameObject projectile = Instantiate(_projectilePrefab, transform.position + offset, rotation);
     }
 
+#if UNITY_EDITOR
     //Gizmos for player movement borders
     private void OnDrawGizmos() {
         Gizmos.color = Color.red;
@@ -243,4 +274,5 @@ public class Player : MonoBehaviour {
         UnityEditor.Handles.Label(new Vector3(_borderRight - _currentPositionInBorder, 1, 0) + transform.position, "Right border");
     }
 
+#endif
 }

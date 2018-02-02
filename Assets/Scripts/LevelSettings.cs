@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
-
+#endif
 public class LevelSettings : MonoBehaviour {
 
     [SerializeField]
@@ -14,7 +15,7 @@ public class LevelSettings : MonoBehaviour {
     [SerializeField]
     private float[] _checkpoints;
     public float[] Checkpoints { get { return _checkpoints; } }
-
+#if UNITY_EDITOR
     private void OnDrawGizmos() {
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(new Vector3(_levelEndX, -10, 0), new Vector3(_levelEndX, 10, 0));
@@ -25,6 +26,8 @@ public class LevelSettings : MonoBehaviour {
             Gizmos.DrawLine(new Vector3(_checkpoints[i], -10, 0), new Vector3(_checkpoints[i], 10, 0));
             Handles.Label(new Vector3(_checkpoints[i], 1, 0), "Checkpoint " + i);
         }
-
+        
     }
+
+#endif
 }
