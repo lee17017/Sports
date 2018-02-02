@@ -28,6 +28,16 @@ public class LevelSettings : MonoBehaviour {
         }
         
     }
-
 #endif
+
+    public GameObject flagPolePrefab;
+    private void Start()
+    {
+        flagPolePrefab = Instantiate(flagPolePrefab, new Vector3(_levelEndX - 0.9f, 1.1f, 0), Quaternion.identity);
+    }
+
+    public void WinLevel()
+    {
+        flagPolePrefab.GetComponent<Flagpole>().changePole();
+    }
 }
