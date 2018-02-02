@@ -181,5 +181,5 @@ MonoBehaviour:
   _projectileDamage: 1
   _notShootBehindPlayer: 0
   _gunTarget: 1
-  _enemyProjectile: {fileID: 1455857397045764, guid: 82d5cee1d90fe7449b94a626ff9994ba,
+  _enemyProjectile: {fileID: 1304778122430914, guid: 1595f1fd8ac77d84ea6fe90d8d15f001,
     type: 2}

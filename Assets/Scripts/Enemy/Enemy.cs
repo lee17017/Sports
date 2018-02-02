@@ -83,6 +83,8 @@ public class Enemy : MonoBehaviour
     {
         transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
         _player = GameObject.FindGameObjectWithTag("Player");
+
+        if (_canShoot || _canMove)
         _beacon.transform.position = new Vector3(_beacon.transform.position.x, _beacon.transform.position.y, 0f);
 
         //if (_accuracy == 0)
@@ -295,7 +297,7 @@ public class Enemy : MonoBehaviour
         // wenn der gegner min. 1 x koordinate weiter links ist.
         return (this.transform.position.x + 1 < _player.transform.position.x);
     }
-
+    
     IEnumerator CollisionDelay()
     {
         _isActive = false;

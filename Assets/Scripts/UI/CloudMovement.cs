@@ -10,8 +10,8 @@ public class CloudMovement : MonoBehaviour {
 	void Start () {
         cloud1 = transform.GetChild(0);
         cloud2 = transform.GetChild(1);
-        cloud1.position = new Vector3(11.2f, 2, 0.5f);
-        cloud2.position = new Vector3(-11.2f, 2, 0.5f);
+        cloud1.position = new Vector3(11.2f, 2,200f);
+        cloud2.position = new Vector3(-11.2f, 2, 200f);
 	}
 	
 	// Update is called once per frame
@@ -20,11 +20,11 @@ public class CloudMovement : MonoBehaviour {
         cloud2.Translate(new Vector3(-Time.deltaTime, 0, 0));
         if (cloud1.position.x < -22.4f)
         {
-            cloud1.position = new Vector3(22.391f, 2, 0.5f);
+            cloud1.position = cloud1.position + new Vector3(44.8f,0,0);
         }
         if (cloud2.position.x < -22.4f)
         {
-            cloud2.position = new Vector3(22.391f, 2, 0.5f);
+            cloud2.position = cloud2.position + new Vector3(44.8f, 0, 0);
         }
 	}
 }

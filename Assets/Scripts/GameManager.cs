@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour {
     private int _maxLevel = 0;
     public int MaxLevel { get { return _maxLevel; } }
 
+    private int _unlockedLevel = 1;
+    public int UnlockedLevel { get { return _unlockedLevel; } }
+
     private const string LevelPrefix = "Level";
 
     private const float LevelLoadingTime = 2f;
@@ -31,6 +34,9 @@ public class GameManager : MonoBehaviour {
     private int _lastCheckpoint = -1;
     private float _loadWithCheckpoint = -1f;
 
+    [SerializeField]
+    private bool won = false;
+
     private void Awake() {
         if(_instance == null) {
             _instance = this;
@@ -42,6 +48,7 @@ public class GameManager : MonoBehaviour {
         if(_maxLevel == 0) {
             _maxLevel = SceneManager.sceneCountInBuildSettings - 1;
         }
+        _unlockedLevel = System.Math.Max(PlayerPrefs.GetInt("unlockedLevel"),1);
     }
 
     //called whenever a level is loaded
@@ -61,6 +68,9 @@ public class GameManager : MonoBehaviour {
         if (_player == null) {
             throw new System.Exception("No Player in scene! ");
         }
+
+        won = false;
+        Time.timeScale = 1;
     }
 
     //called whenever a level is loaded
@@ -82,14 +92,15 @@ public class GameManager : MonoBehaviour {
 
     public void OnDamagePlayer(int damage) {
         _life -= damage;
-        _uiController.UpdateLife(_life);
+        _uiController.UpdateLife(System.Math.Max(_life,0));
         if (_life <= 0) {
             Die();
         }
     }
 
     public void UpdatePlayerPosition(float x) {
-        if(x > _levelSettings.LevelEndX) {
+        if(x > _levelSettings.LevelEndX && !won) {
+            won = true;
             Win();
         }
         if(_checkpoints.Length > _lastCheckpoint + 1 && x > _checkpoints[_lastCheckpoint + 1]){
@@ -98,22 +109,38 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Die() {
-        Debug.Log("Dieded");
-        if(_lastCheckpoint != -1) {
+        Time.timeScale = 0;
+        _uiController.ActivateMenuScreen(true);
+    }
+
+    public void RestartLevel()
+    {
+        Time.timeScale = 1;
+        if (_lastCheckpoint != -1)
+        {
             _loadWithCheckpoint = _checkpoints[_lastCheckpoint];
         }
         LoadLevel(_currentLevel);
     }
+    public void LoadNextLevel()
+    {
+        Time.timeScale = 1;
+        LoadLevel(_currentLevel + 1);
+    }
 
     private void Win() {
         Debug.Log("Win!");
-        if(_currentLevel+1 <= _maxLevel) {
-            LoadLevel(_currentLevel+1);
+        Time.timeScale = 0;
+        if (_currentLevel+1 <= _maxLevel) {
+            _unlockedLevel = System.Math.Max(_currentLevel+1, _unlockedLevel);
+            PlayerPrefs.SetInt("unlockedLevel", _unlockedLevel);
+            _uiController.ActivateMenuScreen(false);
         } else {
             Debug.Log("Congratulations! You beat the game!");
             GameFinished();
         }
     }
+
 
     private void GameFinished() {
         _uiController.ShowWinScreen();
@@ -123,13 +150,18 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public void LoadMainMenu()
+    {
+        SceneManager.LoadScene(0);
+        Time.timeScale = 1;
+    }
+
     public void LoadLevel(int level) {
+        
         if (!_isLoadingLevel && level <= _maxLevel) {
             _isLoadingLevel = true;
 
-            if(_uiController != null) {
-                _uiController.ActivateLoadingScreen();
-            }
+          
 
             StartCoroutine(LoadSceneAsync(level));
         } else if(!_isLoadingLevel) {
@@ -148,6 +180,10 @@ public class GameManager : MonoBehaviour {
         }
 
         UpdateReferences();
+        if (_uiController != null)
+        {
+            _uiController.ActivateLoadingScreen();
+        }
 
         _uiController.UpdateLevelTitle("Level " + scene);
 
@@ -175,6 +211,21 @@ public class GameManager : MonoBehaviour {
     // From Hendrik: Developer TOols for Keyboard (for cheating and such)
     private void LateUpdate()
     {
+        //from Liou: hack im hack 
+        if (Input.GetKeyDown("q"))
+        {
+            _unlockedLevel = 1;
+            PlayerPrefs.SetInt("unlockedLevel", 1);
+            LoadMainMenu();
+        }
+        if (Input.GetKeyDown("w"))
+        {
+            _unlockedLevel = GameManager.Instance.MaxLevel - 1;
+            PlayerPrefs.SetInt("unlockedLevel", GameManager.Instance.MaxLevel-1);
+            LoadMainMenu();
+        }
+
+
         for (int i = 0; i < numKeys.Length; i++)
         {
             if (Input.GetKeyDown(numKeys[i]))

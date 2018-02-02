@@ -48,18 +48,20 @@ public class BodySourceManager : MonoBehaviour
 
     void OnApplicationQuit()
     {
+      
         if (_reader != null)
         {
             _reader.Dispose();
             _reader = null;
         }
 
-        if (_sensor.IsOpen)
+        if (_sensor != null && _sensor.IsOpen)
         {
             _sensor.Close();
+            _sensor = null;
         }
 
-        _sensor = null;
+        
     }
 
     public Body[] GetData()
