@@ -63,7 +63,7 @@ public class Pointer : MonoBehaviour {
    
         foreach (RaycastResult result in raycastResults)
         {
-            Debug.Log("Hit " + raycastResults.Count + result.gameObject.name);
+            //Debug.Log("Hit " + raycastResults.Count + result.gameObject.name);
 
             
             Button b = result.gameObject.GetComponent<Button>();
@@ -82,7 +82,7 @@ public class Pointer : MonoBehaviour {
             if (b != null && b.IsInteractable())
             {
                 curTimer += Time.unscaledDeltaTime;
-                Debug.Log(curTimer);
+                //Debug.Log(curTimer);
                 if(_curImage != null)
                 {
               

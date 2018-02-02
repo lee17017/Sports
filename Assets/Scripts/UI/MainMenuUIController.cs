@@ -33,6 +33,7 @@ public class MainMenuUIController : MonoBehaviour {
         }
         for(int i=unlockedLevel+1; i< maxLevel; i++) {
             Button temp = Instantiate(_levelSelectionButton, _levelSelectionPanel, false);
+            temp.GetComponent<LevelSelectionButton>().Initialize(GameManager.Instance, i);
             temp.interactable = false;
         }
     }

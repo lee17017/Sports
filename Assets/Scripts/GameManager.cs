@@ -212,12 +212,20 @@ public class GameManager : MonoBehaviour {
     private void LateUpdate()
     {
         //from Liou: hack im hack 
-        if (Input.GetKeyDown("p"))
+        if (Input.GetKeyDown("q"))
         {
             _unlockedLevel = 1;
             PlayerPrefs.SetInt("unlockedLevel", 1);
+            LoadMainMenu();
         }
-            
+        if (Input.GetKeyDown("w"))
+        {
+            _unlockedLevel = GameManager.Instance.MaxLevel - 1;
+            PlayerPrefs.SetInt("unlockedLevel", GameManager.Instance.MaxLevel-1);
+            LoadMainMenu();
+        }
+
+
         for (int i = 0; i < numKeys.Length; i++)
         {
             if (Input.GetKeyDown(numKeys[i]))

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4465785, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -1087,6 +1087,8 @@ GameObject:
   - component: {fileID: 883353652}
   - component: {fileID: 883353650}
   - component: {fileID: 883353653}
+  - component: {fileID: 883353654}
+  - component: {fileID: 883353651}
   m_Layer: 5
   m_Name: StartGame
   m_TagString: Untagged
@@ -1153,20 +1155,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1928047765}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1211601768}
-        m_MethodName: LoadLevel
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &883353651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 883353648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60d46cb751accb746a5cfd3e9c6cbdc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &883353652
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1192,6 +1194,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!182 &883353654
+WindZone:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 883353648}
+  m_Enabled: 1
+  m_Mode: 0
+  m_Radius: 20
+  m_WindMain: 1
+  m_WindTurbulence: 1
+  m_WindPulseMagnitude: 0.5
+  m_WindPulseFrequency: 0.01
 --- !u!1001 &920465930
 Prefab:
   m_ObjectHideFlags: 0
@@ -1344,6 +1359,16 @@ Prefab:
       propertyPath: z
       value: 89
       objectReference: {fileID: 0}
+    - target: {fileID: 23139386023919652, guid: c632d5a2ec0ca9b47b123088374bdc8f,
+        type: 2}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 23139386023919652, guid: c632d5a2ec0ca9b47b123088374bdc8f,
+        type: 2}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c632d5a2ec0ca9b47b123088374bdc8f, type: 2}
   m_IsPrefabParent: 0
@@ -1494,11 +1519,11 @@ RectTransform:
   m_Father: {fileID: 851618307}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 30.000008}
-  m_SizeDelta: {x: -40, y: -100.000015}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -20}
+  m_SizeDelta: {x: 640, y: 350}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1049786002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1676,12 +1701,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4a2174348988a0746a17a58cbab56c14, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1211601768 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114592960152156444, guid: 4a2174348988a0746a17a58cbab56c14,
-    type: 2}
-  m_PrefabInternal: {fileID: 1211601767}
-  m_Script: {fileID: 11500000, guid: a205a4743593d8446ab2941009306bcc, type: 3}
 --- !u!1 &1338932728
 GameObject:
   m_ObjectHideFlags: 0
@@ -2521,7 +2540,7 @@ Prefab:
     - target: {fileID: 114623160939494008, guid: 53cb26e681012e14ca81bfb22cb6235c,
         type: 2}
       propertyPath: isKinectEnabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 53cb26e681012e14ca81bfb22cb6235c, type: 2}
