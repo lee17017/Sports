@@ -273,7 +273,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _health: -1
-  _timeToLive: 10
+  _timeToLive: 15
   _collisionDamage: 3
   _canMove: 0
   _moveToPlayer: 0

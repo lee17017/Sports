@@ -81,7 +81,6 @@ public class GameManager : MonoBehaviour {
 
         _player.Activate();
 
-        //From Hendrik:
         //Activating the CameraBox on Camera
         Camera cam = Camera.main;
         for (int i = 0; i < cam.transform.childCount; i++)
@@ -102,6 +101,7 @@ public class GameManager : MonoBehaviour {
         if(x > _levelSettings.LevelEndX && !won) {
             won = true;
             Win();
+            _levelSettings.WinLevel(); // So that the flagpole gets updated
         }
         if(_checkpoints.Length > _lastCheckpoint + 1 && x > _checkpoints[_lastCheckpoint + 1]){
             _lastCheckpoint++;
@@ -128,7 +128,7 @@ public class GameManager : MonoBehaviour {
         LoadLevel(_currentLevel + 1);
     }
 
-    private void Win() {
+    public void Win() {
         Debug.Log("Win!");
         Time.timeScale = 0;
         if (_currentLevel+1 <= _maxLevel) {

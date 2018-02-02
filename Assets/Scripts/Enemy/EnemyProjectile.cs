@@ -11,22 +11,19 @@ public class EnemyProjectile : MonoBehaviour
 
     public static float _timeToLive = 4f; //Sekunden anzahl, bevor das Projektil verschwindet
 
-    /*[SerializeField]
-    private float _startCollisionDelay;*/
-
     // Use this for initialization
     void Start()
     {
 		if (damage == 0) {
 			damage = 1;
 		}
-
-
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        //this.transform.LookAt(transform.position + direction);
         float zRot;
         if (direction.x == 0)
             zRot = 90 + (direction.y <= 0 ? 0 : 180f);
@@ -54,13 +51,6 @@ public class EnemyProjectile : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    /* IEnumerator startingCollisionDelay()
-    {
-        this.GetComponent<Rigidbody>().detectCollisions = false;
-        yield return new WaitForSeconds(_startCollisionDelay);
-        this.GetComponent<Rigidbody>().detectCollisions = true;
-    } */
-
     void OnTriggerEnter(Collider collision)
     {
         //Wenn er mit dem Spieler kollidiert, kassiert dieser ein Schaden und der Gegner stirbt
@@ -71,6 +61,7 @@ public class EnemyProjectile : MonoBehaviour
         }
     }
 
+    // Wenn ein Projektil das Spiefeld verlässt, wird es nach X Sekunden entfernt
     void OnTriggerExit(Collider collision)
     {
         if (collision.gameObject.tag == "CameraBox")
@@ -78,11 +69,4 @@ public class EnemyProjectile : MonoBehaviour
             StartCoroutine(WaitBeforeDie());
         }
     }
-    /*
-    void OnBecameInvisible()
-    {
-        //Wenn ein projetil nicht mehr in der kamera sichtbar ist, verschwindet es nach kurzer Zeit
-        StartCoroutine(WaitBeforeDie());
-    }
-     */
 }
