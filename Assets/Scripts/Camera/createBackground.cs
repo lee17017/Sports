@@ -14,7 +14,7 @@ public class createBackground : MonoBehaviour {
 		for(int i=0; i<2; i++)
         {
             bImg[i] = Instantiate(bImgPref);
-            bImg[i].transform.position = new Vector3(transform.position.x + i * 21.43f, this.transform.position.y, 0);
+            bImg[i].transform.position = new Vector3(transform.position.x + i * 21.43f, this.transform.position.y-1, 0);
         }
         next = 1;
 	}
@@ -24,7 +24,7 @@ public class createBackground : MonoBehaviour {
         if (bImg[next].transform.position.x - transform.position.x < 0)
         {
             next = ((next + 1) % 2);
-            bImg[next].transform.position = new Vector3(bImg[(next+1)%2].transform.position.x + 21.43f, this.transform.position.y, 0);
+            bImg[next].transform.position = new Vector3(bImg[(next+1)%2].transform.position.x + 21.43f, this.transform.position.y-1, 0);
         }
 	}
 }
