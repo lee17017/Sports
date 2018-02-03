@@ -1827,7 +1827,7 @@ Prefab:
     - target: {fileID: 114592960152156444, guid: 4a2174348988a0746a17a58cbab56c14,
         type: 2}
       propertyPath: _maxLevel
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4a2174348988a0746a17a58cbab56c14, type: 2}
@@ -2675,7 +2675,7 @@ Prefab:
     - target: {fileID: 114623160939494008, guid: 53cb26e681012e14ca81bfb22cb6235c,
         type: 2}
       propertyPath: isKinectEnabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 53cb26e681012e14ca81bfb22cb6235c, type: 2}

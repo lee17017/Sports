@@ -196,16 +196,21 @@ public class BossEnemy : MonoBehaviour
                 {
                     // Spawn Enemies:
                     Vector3 spawnLocation = Vector3.up;
+                    Vector3 rotation;
                     if (_spawnTop)
                     {
-                        spawnLocation = new Vector3(transform.position.x + 6f, maxY, 0);
+                        spawnLocation = new Vector3(transform.position.x + 6f, 5.3f, 0);
+                        rotation = new Vector3(0, 0, 0);
+
                     }
                     else
                     {
-                        spawnLocation = new Vector3(transform.position.x + 6f, minY, 0);
+                        spawnLocation = new Vector3(transform.position.x + 6f, -3.5f, 0);
+                        rotation = new Vector3(0, 0, 180);
                     }
                     _spawnTop = !_spawnTop;
-                    Instantiate(_staticEnemy, spawnLocation, Quaternion.identity);
+                    GameObject spawned = Instantiate(_staticEnemy, spawnLocation, Quaternion.identity);
+                    spawned.transform.Rotate(rotation);
                 }
                 break;
         }
@@ -240,11 +245,11 @@ public class BossEnemy : MonoBehaviour
         {
             SwitchDirection(2);
         }
-        if (transform.position.y <= minY)
+        else if (transform.position.y <= minY)
         {
             SwitchDirection(1);
         }
-        if (_changeDirection && Random.Range(0, 1499) == 0)
+        else if (_changeDirection && Random.Range(0, 999) == 0)
         {
             SwitchDirection(0);
         }

@@ -16,6 +16,8 @@ public class Enemy : MonoBehaviour
     private float _timeToLive; //Sagt aus, wielange dieser Gegner aktiv überleben kann (0 = Infinity)
     [SerializeField]
     private int _collisionDamage; // Sagt aus, wieviel Schaden der Spieler bei Kontakt erleidet
+    [SerializeField]
+    private bool _doesNotRotate; // Rotiert er automatisch?
 
     //------------------------
     [Header("MOVEMENT")]
@@ -102,7 +104,7 @@ public class Enemy : MonoBehaviour
                 Shoot();
             }
 
-            if (_startHack)
+            if (_startHack && !_doesNotRotate)
             {
                 // Update LookAt() - Rotation:
                 if (_canShoot && _gunTarget == shootingTarget.Player)
@@ -144,7 +146,7 @@ public class Enemy : MonoBehaviour
     private bool _startHack = false;
     IEnumerator startCD()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.8f);
         _startHack = true;
     }
     // Hack End

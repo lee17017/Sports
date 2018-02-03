@@ -59,7 +59,7 @@ GameObject:
   - component: {fileID: 54022598723795226}
   - component: {fileID: 114390780305251788}
   m_Layer: 0
-  m_Name: StaticShootingEnemy
+  m_Name: Shooting_Enemy_Endless
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84,7 +84,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1908860926161690}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 6.67, y: 5.53, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -92,7 +92,7 @@ Transform:
   - {fileID: 4539779348427886}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!4 &4797573407919234
 Transform:
   m_ObjectHideFlags: 1
@@ -264,14 +264,14 @@ MonoBehaviour:
   _updateBeaconPeriod: 0
   _beacon: {fileID: 1159256613197852}
   _canShoot: 1
-  _gunOffsetFactor: 0.95
-  _gunMinCD: 2.4
-  _gunMaxCD: 2.4
-  _gunStartCD: 1
-  _accuracy: 1
+  _gunOffsetFactor: 1
+  _gunMinCD: 2.5
+  _gunMaxCD: 3
+  _gunStartCD: 1.5
+  _accuracy: 0
   _projectileSpeed: 1.5
   _projectileDamage: 1
-  _notShootBehindPlayer: 0
-  _gunTarget: 4
+  _notShootBehindPlayer: 1
+  _gunTarget: 0
   _enemyProjectile: {fileID: 1304778122430914, guid: 1595f1fd8ac77d84ea6fe90d8d15f001,
     type: 2}

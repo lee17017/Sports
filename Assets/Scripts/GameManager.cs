@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
 
     [Header("IMPORTANT: will eventually crash game if not correct")]
     [SerializeField]
@@ -14,6 +15,20 @@ public class GameManager : MonoBehaviour {
     public int UnlockedLevel { get { return _unlockedLevel; } }
 
     private const string LevelPrefix = "Level";
+
+    private string[] LevelNames = new string[]
+    {
+        "First Flaps",          // Lvl 1
+        "Easy \n Encounter",
+        "Flappy \n Awakening",
+        "Homing \n Birds",
+        "Wall of \n Flappys",          // Lvl 5
+        "The Piping",
+        "Bag of \n Flowers",
+        "Birdocalypse",
+        "Flappy \n Boss Bird",
+        "Endless \n Mode"          // Lvl 10
+    };
 
     private const float LevelLoadingTime = 2f;
 
@@ -37,35 +52,44 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private bool won = false;
 
-    private void Awake() {
-        if(_instance == null) {
+    private void Awake()
+    {
+        if (_instance == null)
+        {
             _instance = this;
-        }else if(_instance != this) {
+        }
+        else if (_instance != this)
+        {
             Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
 
-        if(_maxLevel == 0) {
+        if (_maxLevel == 0)
+        {
             _maxLevel = SceneManager.sceneCountInBuildSettings - 1;
         }
-        _unlockedLevel = System.Math.Max(PlayerPrefs.GetInt("unlockedLevel"),1);
+        _unlockedLevel = System.Math.Max(PlayerPrefs.GetInt("unlockedLevel"), 1);
     }
 
     //called whenever a level is loaded
-    private void UpdateReferences() {
+    private void UpdateReferences()
+    {
         //require some scripts and objects in scene
         _uiController = FindObjectOfType<UIController>();
-        if (_uiController == null) {
+        if (_uiController == null)
+        {
             throw new System.Exception("No UiController in scene! ");
         }
 
         _levelSettings = FindObjectOfType<LevelSettings>();
-        if (_levelSettings == null) {
+        if (_levelSettings == null)
+        {
             throw new System.Exception("No LevelSettings in scene! ");
         }
 
         _player = FindObjectOfType<Player>();
-        if (_player == null) {
+        if (_player == null)
+        {
             throw new System.Exception("No Player in scene! ");
         }
 
@@ -74,7 +98,8 @@ public class GameManager : MonoBehaviour {
     }
 
     //called whenever a level is loaded
-    private void InitializeLevel() {
+    private void InitializeLevel()
+    {
         _life = _levelSettings.Life;
         _uiController.SetupUI(_levelSettings.Life);
         _checkpoints = _levelSettings.Checkpoints;
@@ -89,26 +114,32 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public void OnDamagePlayer(int damage) {
+    public void OnDamagePlayer(int damage)
+    {
         _life -= damage;
-        _uiController.UpdateLife(System.Math.Max(_life,0));
-        if (_life <= 0) {
+        _uiController.UpdateLife(System.Math.Max(_life, 0));
+        if (_life <= 0)
+        {
             Die();
         }
     }
 
-    public void UpdatePlayerPosition(float x) {
-        if(x > _levelSettings.LevelEndX && !won) {
+    public void UpdatePlayerPosition(float x)
+    {
+        if (x > _levelSettings.LevelEndX && !won)
+        {
             won = true;
             Win();
             _levelSettings.WinLevel(); // So that the flagpole gets updated
         }
-        if(_checkpoints.Length > _lastCheckpoint + 1 && x > _checkpoints[_lastCheckpoint + 1]){
+        if (_checkpoints.Length > _lastCheckpoint + 1 && x > _checkpoints[_lastCheckpoint + 1])
+        {
             _lastCheckpoint++;
         }
     }
 
-    private void Die() {
+    private void Die()
+    {
         Time.timeScale = 0;
         _uiController.ActivateMenuScreen(true);
     }
@@ -128,24 +159,30 @@ public class GameManager : MonoBehaviour {
         LoadLevel(_currentLevel + 1);
     }
 
-    public void Win() {
+    public void Win()
+    {
         Debug.Log("Win!");
         Time.timeScale = 0;
-        if (_currentLevel+1 <= _maxLevel) {
-            _unlockedLevel = System.Math.Max(_currentLevel+1, _unlockedLevel);
+        if (_currentLevel + 1 <= _maxLevel)
+        {
+            _unlockedLevel = System.Math.Max(_currentLevel + 1, _unlockedLevel);
             PlayerPrefs.SetInt("unlockedLevel", _unlockedLevel);
             _uiController.ActivateMenuScreen(false);
-        } else {
+        }
+        else
+        {
             Debug.Log("Congratulations! You beat the game!");
             GameFinished();
         }
     }
 
 
-    private void GameFinished() {
+    private void GameFinished()
+    {
         _uiController.ShowWinScreen();
 
-        if (FindObjectOfType<Player>()) {
+        if (FindObjectOfType<Player>())
+        {
             FindObjectOfType<Player>().Deactivate();
         }
     }
@@ -156,26 +193,31 @@ public class GameManager : MonoBehaviour {
         Time.timeScale = 1;
     }
 
-    public void LoadLevel(int level) {
-        
-        if (!_isLoadingLevel && level <= _maxLevel) {
+    public void LoadLevel(int level)
+    {
+
+        if (!_isLoadingLevel && level <= _maxLevel)
+        {
             _isLoadingLevel = true;
-
-          
-
             StartCoroutine(LoadSceneAsync(level));
-        } else if(!_isLoadingLevel) {
+        }
+        else if (!_isLoadingLevel)
+        {
             Debug.LogWarning("Already loading a Level, wait until done!");
-        } else {
-            Debug.LogWarning("Level " + level+ " does not exist!");
+        }
+        else
+        {
+            Debug.LogWarning("Level " + level + " does not exist!");
         }
     }
 
-    IEnumerator LoadSceneAsync(int scene) {
+    IEnumerator LoadSceneAsync(int scene)
+    {
         Debug.Log("Starting to load " + LevelPrefix + scene);
         //AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(LevelPrefix + scene);
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene);
-        while (!asyncLoad.isDone) {
+        while (!asyncLoad.isDone)
+        {
             yield return null;
         }
 
@@ -185,13 +227,16 @@ public class GameManager : MonoBehaviour {
             _uiController.ActivateLoadingScreen();
         }
 
-        _uiController.UpdateLevelTitle("Level " + scene);
+        //_uiController.UpdateLevelTitle("Level " + scene);
+        _uiController.UpdateLevelTitle(LevelNames[scene - 1]);
 
-        if(_loadWithCheckpoint != -1) {
+        if (_loadWithCheckpoint != -1)
+        {
             _player.transform.Translate(new Vector3(_loadWithCheckpoint, 0, 0));
         }
 
-        for (float i = LevelLoadingTime; i > 0; i -= .01f) {
+        for (float i = LevelLoadingTime; i > 0; i -= .01f)
+        {
             _uiController.UpdateGameReadyTime(i);
             yield return new WaitForSecondsRealtime(.01f);
         }
@@ -208,7 +253,7 @@ public class GameManager : MonoBehaviour {
         yield return null;
     }
 
-    // From Hendrik: Developer TOols for Keyboard (for cheating and such)
+    // Developer Tools for Keyboard (for cheating and such)
     private void LateUpdate()
     {
         //from Liou: hack im hack 
@@ -221,11 +266,9 @@ public class GameManager : MonoBehaviour {
         if (Input.GetKeyDown("w"))
         {
             _unlockedLevel = GameManager.Instance.MaxLevel - 1;
-            PlayerPrefs.SetInt("unlockedLevel", GameManager.Instance.MaxLevel-1);
+            PlayerPrefs.SetInt("unlockedLevel", GameManager.Instance.MaxLevel - 1);
             LoadMainMenu();
         }
-
-
         for (int i = 0; i < numKeys.Length; i++)
         {
             if (Input.GetKeyDown(numKeys[i]))
@@ -248,4 +291,9 @@ public class GameManager : MonoBehaviour {
          KeyCode.Alpha9,
          KeyCode.Alpha0,
      };
+
+    public string GetLevelName(int level)
+    {
+        return LevelNames[level];
+    }
 }

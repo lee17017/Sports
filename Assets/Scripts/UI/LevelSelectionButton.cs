@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class LevelSelectionButton : MonoBehaviour{
+public class LevelSelectionButton : MonoBehaviour
+{
 
     [SerializeField]
     private Text _text;
@@ -9,16 +10,20 @@ public class LevelSelectionButton : MonoBehaviour{
     private int _level;
     private GameManager _gameManager;
 
-    public void Initialize(GameManager gameManager, int level) {
+    public void Initialize(GameManager gameManager, int level)
+    {
         _level = level;
         _gameManager = gameManager;
 
-        _text.text = "Level " + level;
+        //_text.text = "Level " + level;
+        _text.text = _gameManager.GetLevelName(level - 1);
+
 
         GetComponent<Button>().onClick.AddListener(OnClick);
     }
 
-    private void OnClick() {
+    private void OnClick()
+    {
         _gameManager.LoadLevel(_level);
     }
 }
