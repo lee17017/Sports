@@ -62,7 +62,9 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
         DontDestroyOnLoad(gameObject);
+        Cursor.visible = false;
 
         if (_maxLevel == 0)
         {
@@ -277,6 +279,10 @@ public class GameManager : MonoBehaviour
                 LoadLevel(numberPressed);
                 break;
             }
+        }
+        if (Input.GetKeyDown("c"))
+        {
+            Cursor.visible = !Cursor.visible;
         }
     }
     private KeyCode[] numKeys = {
