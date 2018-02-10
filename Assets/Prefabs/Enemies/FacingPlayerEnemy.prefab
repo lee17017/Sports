@@ -89,8 +89,8 @@ MeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 6c7c831e48a27f846984a1be86a9ad46, type: 2}
   - {fileID: 2100000, guid: 48a65c5e704d0ab4e84ad8ec35729d38, type: 2}
-  - {fileID: 2100000, guid: 0fe888d5a1089344b8e6468290180ee8, type: 2}
-  - {fileID: 2100000, guid: 174a465624286fe4aaca099e98cefbff, type: 2}
+  - {fileID: 2100000, guid: afad6390521ed41489697782b9ac9c13, type: 2}
+  - {fileID: 2100000, guid: 68327ce8c86a21e4ea405fad1ef1f880, type: 2}
   - {fileID: 2100000, guid: b4a1aee96dab0b84bb2c1481395f2c4e, type: 2}
   - {fileID: 2100000, guid: 172ff369f9e36ca41a09fb8679d95d93, type: 2}
   - {fileID: 2100000, guid: 91ad92fd1b56d3c48bf4639718161965, type: 2}
@@ -171,9 +171,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c20b9bf3b5d55f34e9f5408a34032010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 1
+  _health: 2
   _timeToLive: 5
   _collisionDamage: 1
+  _doesNotRotate: 0
   _canMove: 1
   _moveToPlayer: 1
   _notMoveBehindPlayer: 1

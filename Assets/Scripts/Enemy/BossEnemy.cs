@@ -13,6 +13,12 @@ public class BossEnemy : MonoBehaviour
     // Wenn -1, ist der Gegner unverwundbar und kann im Moment NIE sterben.
 
     [SerializeField]
+    private bool _buffsNotRandomly;
+    [SerializeField]
+    private int _numberOfBuffs;
+    private int _lastBuff;
+
+    [SerializeField]
     private float _timeToLive; //Sagt aus, wielange dieser Gegner aktiv überleben kann (0 = Infinity)
     [SerializeField]
     private int _collisionDamage; // Sagt aus, wieviel Schaden der Spieler bei Kontakt erleidet
@@ -123,6 +129,11 @@ public class BossEnemy : MonoBehaviour
             }
             LookDirection(_player.transform.position - transform.position);
         }
+
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            LooseHealth(1);
+        }
     }
 
     // When the boss dies, the level end must trigger
@@ -134,13 +145,16 @@ public class BossEnemy : MonoBehaviour
 
     public void LooseHealth(int damage)
     {
+        _score++;
+        scoreText.text = "Score: " + _score;
+
         if (_curHealth != -1)
         {
             _curHealth -= damage;
             if (_curHealth <= 0)
             {
                 powerUP();
-                _curHealth = 4;
+                _curHealth = _health;
             }
         }
     }
@@ -150,42 +164,65 @@ public class BossEnemy : MonoBehaviour
     {
         _curHealth = _health;
         // Gains a bonus effect:
-        int rand = Random.Range(1, 101);
+        int rand = (_lastBuff + 1) % (_numberOfBuffs + 1);
 
-        if (rand <= _buffSpeed)
+        if (!_buffsNotRandomly)
         {
-            rand = 0;
+            rand = Random.Range(1, 101);
+
+            if (rand <= _buffSpeed)
+            {
+                rand = 0;
+            }
+            else if (rand <= _buffSpeed + _buffMinCD)
+            {
+                rand = 1;
+            }
+            else if (rand <= _buffSpeed + _buffMinCD + _buffMaxCD)
+            {
+                rand = 2;
+            }
+            else if (rand <= _buffSpeed + _buffMinCD + _buffMaxCD + _buffProjectile)
+            {
+                rand = 3;
+            }
+            else
+            {
+                rand = 4;
+            }
         }
-        else if (rand <= _buffSpeed + _buffMinCD)
-        {
-            rand = 1;
-        }
-        else if (rand <= _buffSpeed + _buffMinCD + _buffMaxCD)
-        {
-            rand = 2;
-        }
-        else if (rand <= _buffSpeed + _buffMinCD + _buffMaxCD + _buffProjectile)
-        {
-            rand = 3;
-        }
-        else
-        {
-            rand = 4;
-        }
+
+        _lastBuff = rand;
 
         switch (rand)
         {
             case 0:
-                _movementSpeed += (_maxMove - _movementSpeed) * 0.4f;
+                _movementSpeed += 0.3f;
+                if (_movementSpeed >= _maxMove)
+                {
+                    _movementSpeed = _maxMove;
+                }
                 break;
             case 1:
-                _gunMinCD += (_maxMinCD - _gunMinCD) * 0.4f;
+                _gunMinCD -= 0.15f;
+                if (_gunMinCD <= _maxMinCD)
+                {
+                    _gunMinCD = _maxMinCD;
+                }
                 break;
             case 2:
-                _gunMaxCD += (_maxMaxCD - _gunMaxCD) * 0.4f;
+                _gunMaxCD -= 0.19f;
+                if (_gunMaxCD <= _maxMaxCD)
+                {
+                    _gunMaxCD = _maxMaxCD;
+                }
                 break;
             case 3:
-                _projectileSpeed += (_maxProjectileSpeed - _projectileSpeed) * 0.4f;
+                _projectileSpeed += 0.15f;
+                if (_projectileSpeed >= _maxProjectileSpeed)
+                {
+                    _projectileSpeed = _maxProjectileSpeed;
+                }
                 break;
             case 4:
                 if (_changeDirection == false)
@@ -222,8 +259,6 @@ public class BossEnemy : MonoBehaviour
         if (collision.gameObject.tag == "PlayerProjectile")
         {
             LooseHealth(1);
-            _score++;
-            scoreText.text = "Score: " + _score;
             Destroy(collision.gameObject);
         }
         else if (collision.gameObject.tag == "CameraBox" && !_isActive)

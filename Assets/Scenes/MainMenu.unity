@@ -2675,7 +2675,7 @@ Prefab:
     - target: {fileID: 114623160939494008, guid: 53cb26e681012e14ca81bfb22cb6235c,
         type: 2}
       propertyPath: isKinectEnabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 53cb26e681012e14ca81bfb22cb6235c, type: 2}

@@ -338,4 +338,9 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(1f);
         _isActive = true;
     }
+
+    public bool getActive()
+    {
+        return _isActive;
+    }
 }
