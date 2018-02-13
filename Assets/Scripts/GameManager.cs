@@ -165,8 +165,13 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Win!");
         Time.timeScale = 0;
+        Debug.Log(_currentLevel);
+        Debug.Log(_maxLevel);
         if (_currentLevel + 1 <= _maxLevel)
         {
+            if(_currentLevel + 1 == _maxLevel) { _uiController.ActivateMenuScreen(false); return; }
+
+            Debug.Log("here");
             _unlockedLevel = System.Math.Max(_currentLevel + 1, _unlockedLevel);
             PlayerPrefs.SetInt("unlockedLevel", _unlockedLevel);
             _uiController.ActivateMenuScreen(false);
